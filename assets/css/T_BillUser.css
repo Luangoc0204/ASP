@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+:root {
+    --main-color: #ff8243;
+}
+.site-header{
+    background-color: white;
+}
+.div_bill{
+    background-image: url(https://mobimg.b-cdn.net/v3/fetch/b4/b47511c60f0c90cd458db24d8006758f.jpeg);
+    backdrop-filter: blur(5px);
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 30px;
+}
+#header{
+    width: 100%;
+    height: 100px;
+    background-color: #f0feda;
+  }
+  .logo_name{
+    display: inline-flex;
+    width: 70%;
+  }
+  .logo{
+    margin-left: 30px;
+    border: 0px;
+    height: 100px;
+  }
+  .name_restaurant{
+    color: rgb(244, 44, 41);
+    font-size: 60px;
+    margin: 10px 25px ;
+    font-family: 'Kolker Brush', cursive;
+  }
+  #hoa_don{
+    width: 50%;
+    margin: auto;
+    margin-top: 100px;
+    background-color: #f1f1f1;
+    padding-bottom: 30px;
+    border-radius: 4px;
+    border: 1px solid var(--main-color);
+  }
+  .chi_tiet_hoa_don{
+    text-align: center;
+    border-bottom: 1px solid var(--main-color);
+    margin: 0 100px;
+  }
+  .nha_hang{
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+  .dia_chi{
+    font-size: 19px;
+    box-shadow: 0 2px var(--main-color);
+    padding: 4px;
+  }
+  .hoa_don_tt{
+    font-weight: bold;
+    margin-top: 15px;
+    font-size: 35px;
+    text-align: center;
+  }
+  .hoa_don_thanh_toan{
+    margin-left: 30px;
+  }
+  .ngay_in{
+    margin-top: 10px;
+  }
+  .tt_khach_hang{
+    margin-top: 10px;
+  }
+  .gio_in{
+    margin-left: 40px;
+  }
+  .sdt_khach_hang{
+    margin-left: 40px;
+  }
+  .table_list{
+    margin-top: 20px;
+    margin-left: 30px ;
+    margin-right: 30px;
+  }
+  .gach_duoi{
+    margin: 30px 70px 20px 72px;
+    box-shadow: 0 3px var(--main-color);
+    padding: 4px 0 0 0;
+  }
+  .col_monan{
+    width: 150px;
+  }
+  .phan_cuoi{
+    text-align: center;
+  }
