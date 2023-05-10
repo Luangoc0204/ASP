@@ -282,15 +282,15 @@ function checkRemainingAgain() {
                 updateSumMoney();
                 updateAmountCF(idCartFood, amountInput.value);
             } else {
-                if (idCartFood != 0) {
-                    listIdCartFood.push(idCartFood);
-                } else{
+                if (idCartFood == 0) {
                     console.log('idFood: ' + idFood);
                     console.log('amountInput: ' + amountInput.value);
-                    console.log('idFoodBuyNow: ' + idFoodBuyNow);
-                    console.log('amountFoodBuyNow: ' + amountFoodBuyNow);
                     idFoodBuyNow = idFood
+                    console.log('idFoodBuyNow: ' + idFoodBuyNow);
                     amountFoodBuyNow = amountInput.value
+                    console.log('amountFoodBuyNow: ' + amountFoodBuyNow);
+                } else{
+                    listIdCartFood.push(idCartFood);
                 }
             }
         });
@@ -376,7 +376,7 @@ function purchaseCart(arrIdCartFood, idFoodBuyNow, amountFoodBuyNow) {
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             console.log(this.responseText);
-            var idBill = this.responseText; // thay 123 bằng giá trị idBill của bạn
+            var idBill = this.responseText; 
             var url = 'L_BillUser.asp?idBill=' + idBill;
             window.location.replace(url);
         }

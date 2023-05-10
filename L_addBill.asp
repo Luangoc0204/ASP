@@ -15,6 +15,10 @@
     idFoodBuyNow = Request.QueryString("idFoodBuyNow")
     amountFoodBuyNow = Request.QueryString("amountFoodBuyNow")
     'Response.write("idCart: "+ TypeName(idCart) + CStr(idCart) + "<br>")
+    datetimeCF = CStr(Now())
+    datetimeCF = Replace(datetimeCF, "SA", "AM")
+    datetimeCF = Replace(datetimeCF, "CH", "PM")
+    'Response.write("datetimeCF: "+ datetimeCF + "<br>")
     connDB.Open
     If (isnull(idFoodBuyNow) or trim(idFoodBuyNow) = "") Then
         ' true
@@ -25,7 +29,8 @@
             cmdPrep.ActiveConnection = connDB
             cmdPrep.CommandType = 1
             cmdPrep.Prepared = True
-            cmdPrep.CommandText = "SET NOCOUNT ON;UPDATE CartFood SET datetimeCF = getDate(), isPay = 1 WHERE idCartFood = ?"
+            cmdPrep.CommandText = "SET NOCOUNT ON;UPDATE CartFood SET datetimeCF = convert(datetime, ?), isPay = 1 WHERE idCartFood = ?"
+            cmdPrep.parameters.Append cmdPrep.createParameter("datetimeCF",202,1,255,CStr(datetimeCF))
             cmdPrep.parameters.Append cmdPrep.createParameter("idCartFood", 3, 1, , CInt(idCartFood))
             cmdPrep.execute
         Next
@@ -36,18 +41,20 @@
             cmdPrep.ActiveConnection = connDB
             cmdPrep.CommandType = 1
             cmdPrep.Prepared = True
-            cmdPrep.CommandText = "INSERT INTO CartFood(idCart, idFood, amountCF, isPay) VALUES(?, ?, ? , 1)"
+            cmdPrep.CommandText = "INSERT INTO CartFood(idCart, idFood, amountCF,datetimeCF, isPay) VALUES(?, ?, ?, CAST(CONVERT(varchar, ? , 120) AS DATETIME) , 1)"
             cmdPrep.parameters.Append cmdPrep.createParameter("idCartFood", 3, 1, , CInt(idCart))
             cmdPrep.parameters.Append cmdPrep.createParameter("idFood", 3, 1, , CInt(idFoodBuyNow))
             cmdPrep.parameters.Append cmdPrep.createParameter("amountFood", 3, 1, , CInt(amountFoodBuyNow))
+            cmdPrep.parameters.Append cmdPrep.createParameter("datetimeCF",202,1,255,datetimeCF)
             cmdPrep.execute
     End if
     set cmdPrep = Server.CreateObject("ADODB.Command")
     cmdPrep.ActiveConnection = connDB
     cmdPrep.CommandType = 1
     cmdPrep.Prepared = True
-    cmdPrep.CommandText = "DECLARE @idBill INT;exec insertBill @idCart = ?, @sumPrice = ?, @discount = ?, @discountGiftCode = ?, @idBill = @idBill OUTPUT; select @idBill "
+    cmdPrep.CommandText = "DECLARE @idBill INT;exec insertBill @idCart = ?, @datetime = ?, @sumPrice = ?, @discount = ?, @discountGiftCode = ?, @idBill = @idBill OUTPUT; select @idBill "
     cmdPrep.parameters.Append cmdPrep.createParameter("idCartFood",3,1, ,CInt(idCart))
+    cmdPrep.parameters.Append cmdPrep.createParameter("datetimeCF",202,1,255,datetimeCF)
     cmdPrep.parameters.Append cmdPrep.createParameter("sumPrice",202,1, 255,CStr(totalPrice))
     cmdPrep.parameters.Append cmdPrep.createParameter("discount",202,1, 255,CStr(discount_user))
     cmdPrep.parameters.Append cmdPrep.createParameter("discountGiftCode",202,1, 255,CStr(discount_giftcode))
