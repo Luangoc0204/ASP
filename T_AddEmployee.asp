@@ -43,9 +43,9 @@
         salary = Request.form("salary")
         position = Request.form("position")
 
-        if (cint(idEmployee) = 0) then
-            if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(salary) and salary<>"" and NOT isnull(position) and position<>"") then
-
+        if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(salary) and salary<>"" and NOT isnull(position) and position<>"") then
+            if (cint(idEmployee) = 0) then
+                'nếu không có idEmployee -> thực hiện Add Employee
                 Dim formattedPass
                 formattedPass = FormatDateTime(birthday, 2)
                 password2 = Replace(formattedPass, "/", "")
@@ -88,12 +88,8 @@
                 Session("idUser") = newId
                 Session("Success") = "Add employee successfully"
                 Response.redirect("TH_QL_quanlyNV.asp")
-            else
-                Session("Error") = "You have to input enough info"
-            end if
-        else          
-            if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(salary) and salary<>"" and NOT isnull(position) and position<>"") then
-
+            else          
+                'nếu có idEmployee -> thực hiện Edit
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
                 connDB.Open()
                 cmdPrep.ActiveConnection = connDB
@@ -120,10 +116,10 @@
                 cmdPrep.execute
                 Session("Success") = "The employee was edited!"
                 Response.redirect("TH_QL_quanlyNV.asp")
-            else
-                Session("Error") = "You have to input enough info"
-            end if   
-        end if
+            end if
+        else
+            Session("ErrorTitle") = "You have to input enough info!!!"
+        end if   
     End if         
 %>
 
@@ -178,7 +174,18 @@
                         </select>
                     </div>
                 </div>
-                <p class="p_error" style="padding: 5px 10px; height: 18px;"></p>
+                <%
+                    If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
+                %>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;"><%=Session("ErrorTitle")%></p>
+                <%
+                    Session.Contents.Remove("ErrorTitle")
+                    else
+                %>
+                <p class="p_error" style="padding: 5px 10px; height: 24px;"></p>
+                <%
+                    end if
+                %>
                 <div class="controls">
                     <div class="controls_1">
                         <button type="submit" class="btn btn-primary key">Set</button>
