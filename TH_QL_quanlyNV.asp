@@ -142,7 +142,7 @@
                                         </li>
                                         </a>
                                         <li>
-                                            <button class="dish-add-btn btn-add-to-cart">
+                                            <button data-href="L_deleteEmployee.asp?idEmployee=<%=result("idEmployee")%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="dish-add-btn btn-add-to-cart">
                                                 <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>
                                                 <span style="padding-left: 5px;">Delete</span>
                                             </button>
@@ -162,7 +162,24 @@
         </div>
     </section>
     <!-- Menu end -->
-
+    <!-- MODAL delete-->
+        <div class="modal" tabindex="-1" id="confirm-delete">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Employee Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete employee?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="L_menu.asp" type="button" class="btn btn-secondary">Close</a>
+                            <a class="btn btn-danger btn-delete">Delete</a>
+                        </div>
+                    </div>
+                </div>
+        </div>
     <!-- jquery  -->
     <script src="./assets/javascript/jquery-3.5.1.min.js"></script>
     <!-- bootstrap -->
@@ -184,6 +201,15 @@
     <!-- main js -->
     <script src="./assets/javascript/TH_QL_quanlyNV.js"></script>
     <script src="./assets/javascript/L_header.js"></script>
+    <script>
+        $(function () {
+            $('#confirm-delete').on('show.bs.modal', function (e) {
+                $(this)
+                    .find('.btn-delete')
+                    .attr('href', $(e.relatedTarget).data('href'));
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -69,6 +69,9 @@
                             </ul>
                         </nav>
                         <div class="header-right">
+                                    <%
+                                        If (not isnull(Session("idUser")) and trim(Session("idUser")) <> "" and Session("role") = "CUSTOMER") Then
+                                    %>
                             <div class="header-cart">
                                 <a href="L_purchaseCart.asp" class="header-btn icon-white" style="margin: 0;">
                                     <img src="./assets/images/icon_shopping_cart_2_line.png">
@@ -80,9 +83,6 @@
                                         <img src="./assets/images/cart_shopping.png" alt="">
                                         <p>You have no items in your shopping cart</p>
                                     </div> -->
-                                    <%
-                                        If (not isnull(Session("idUser")) and trim(Session("idUser")) <> "") Then
-                                    %>
                                     <div class="list-food-cart">
                                         <p>Recently Added Products</p>
                                         <div class="index_product">
@@ -97,19 +97,11 @@
                                     <div class="btn_show_cart">
                                         <a href="L_purchaseCart.asp">View My Shopping Cart</a>
                                     </div>
-                                    
-                                    <%
-                                        Else
-                                        
-                                    %>
-                                    <div class="btn_show_cart">
-                                        <a href="loginPage.asp">Please login</a>
-                                    </div>
+                                </div>
+                            </div>
                                     <%
                                         End if
                                     %>
-                                </div>
-                            </div>
                             <div class="header-info">
                                 <a data-href="" class="header-btn header-info icon-white" style="margin: 0;">
                                     <img src="./assets/images/icon_user_3_line.png">
@@ -168,6 +160,7 @@
         </div>
     </header>
     <!-- header ends  -->
+    <!-- Toast success -->
     <%
     
         If (NOT isnull(Session("Success"))) AND (TRIM(Session("Success"))<>"") Then
@@ -202,6 +195,43 @@
         </script>
     <%
         Session.Contents.Remove("Success")
+        End If
+    %>
+    <!-- Toast error -->
+    <%
+    
+        If (NOT isnull(Session("Error"))) AND (TRIM(Session("Error"))<>"") Then
+    %>
+
+    <div style="margin-top:100px; --bs-bg-opacity: .9; position:fixed ; z-index:99 " class=" toast align-items-center bg-danger text-white start-50 animate__animated animate__fadeInDown " role="status" aria-live="polite" aria-atomic="true" data-bs-animation="false" data-bs-autohide="true" data-bs-delay="5000">
+        
+        <div class="d-flex  ">
+            <div class="toast-body ">
+                <%=Session("Error")%>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+
+        
+        <script>
+            $(document).ready(function() {
+            $('.toast').toast('show');
+
+            $('.toast').on('hidden.bs.toast', function () {
+            $(this).removeClass('hide').addClass('show');
+            // Thêm lớp animate__animated animate__fadeOutUp vào Toast trước khi ẩn nó
+            $(this).addClass('animate__animated animate__fadeOutUp');
+            
+            // Đợi cho animation hoàn thành trước khi ẩn Toast
+            setTimeout(function() {
+                $(this).hide();
+            }.bind(this), 1500); // thời gian animation, tương ứng với duration của animate__fadeOutUp
+            });
+            });
+        </script>
+    <%
+        Session.Contents.Remove("Error")
         End If
     %>
     <script src="./assets/javascript/bootstrap.min.js"></script>

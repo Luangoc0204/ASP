@@ -1,22 +1,24 @@
 // hiển thị modal cart
 var shopCart = document.querySelector('.header-cart');
-var modal = document.getElementById('modal-cart');
-modal.classList.add('stardust-popover__popover--hide');
-
-shopCart.addEventListener('mouseenter', () => {
-    modal.style.visibility = 'visible';
-    modal.classList.add('stardust-popover__popover--show');
-    modal.classList.remove('stardust-popover__popover--hide');
-});
-shopCart.addEventListener('mouseleave', () => {
-    if (!shopCart.contains(event.relatedTarget)) {
-        modal.classList.remove('stardust-popover__popover--show');
-        modal.classList.add('stardust-popover__popover--hide');
-        setTimeout(() => {
-            modal.style.visibility = 'hidden';
-        }, 200);
-    }
-});
+if (shopCart != null){
+    var modal = document.getElementById('modal-cart');
+    modal.classList.add('stardust-popover__popover--hide');
+    
+    shopCart.addEventListener('mouseenter', () => {
+        modal.style.visibility = 'visible';
+        modal.classList.add('stardust-popover__popover--show');
+        modal.classList.remove('stardust-popover__popover--hide');
+    });
+    shopCart.addEventListener('mouseleave', () => {
+        if (!shopCart.contains(event.relatedTarget)) {
+            modal.classList.remove('stardust-popover__popover--show');
+            modal.classList.add('stardust-popover__popover--hide');
+            setTimeout(() => {
+                modal.style.visibility = 'hidden';
+            }, 200);
+        }
+    });
+}
 // hiển thị modal infor
 var user_info = document.querySelector('.header-info');
 var modal_user = document.getElementById('modal-info');
