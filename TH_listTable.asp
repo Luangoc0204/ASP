@@ -64,7 +64,7 @@
                             cmdPrep.ActiveConnection = connDB
                             cmdPrep.CommandType = 1
                             cmdPrep.Prepared = True
-                            cmdPrep.CommandText = "SELECT * FROM [Table]"
+                            cmdPrep.CommandText = "SELECT * FROM [Table] where isActive = 1"
                             set result = cmdPrep.execute
                             do while not result.EOF
                         %>
@@ -94,7 +94,7 @@
                                             </button>
                                         </li>
                                         <li>
-                                            <button class="dish-add-btn btn-add-to-cart">
+                                            <button data-href="L_deleteTable.asp?idTable=<%=result("idTable")%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="dish-add-btn btn-add-to-cart">
                                                 <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>
                                                 <span style="padding-left: 5px;">Delete</span>
                                             </button>
@@ -114,7 +114,24 @@
         </div>
     </section>
     <!-- Menu end -->
-
+    <!-- MODAL delete-->
+        <div class="modal" tabindex="-1" id="confirm-delete">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Delete Table Confirmation</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete table?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="TH_listTable.asp" type="button" class="btn btn-secondary">Close</a>
+                            <a class="btn btn-danger btn-delete">Delete</a>
+                        </div>
+                    </div>
+                </div>
+        </div>
     <!-- jquery  -->
     <script src="./assets/javascript/jquery-3.5.1.min.js"></script>
     <!-- bootstrap -->
@@ -136,6 +153,15 @@
     <!-- main js -->
     <script src="./main.js"></script>
     <script src="./assets/javascript/L_header.js"></script>
+    <script>
+        $(function () {
+            $('#confirm-delete').on('show.bs.modal', function (e) {
+                $(this)
+                    .find('.btn-delete')
+                    .attr('href', $(e.relatedTarget).data('href'));
+            });
+        });
+    </script>
 </body>
 
 </html>

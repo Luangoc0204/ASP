@@ -174,7 +174,7 @@
                             <p>Are you sure you want to delete employee?</p>
                         </div>
                         <div class="modal-footer">
-                            <a href="L_menu.asp" type="button" class="btn btn-secondary">Close</a>
+                            <a href="TH_QL_quanlyNV.asp" type="button" class="btn btn-secondary">Close</a>
                             <a class="btn btn-danger btn-delete">Delete</a>
                         </div>
                     </div>
