@@ -267,8 +267,13 @@
                                         cmdPrep.ActiveConnection = connDB
                                         cmdPrep.CommandType = 1
                                         cmdPrep.Prepared = True
-                                        cmdPrep.CommandText = "SELECT * FROM [BookingTable] INNER JOIN [User] ON [BookingTable].idUser =  [User].idUser inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [User].idUser = (SELECT idUser FROM Customer WHERE idCustomer = ?)"
-                                        cmdPrep.parameters.Append cmdPrep.createParameter("idCustomer",3,1, ,CInt(idCustomer))        
+                                        if (not isnull(idCustomer) and trim(idCustomer) <> "") then
+                                            cmdPrep.CommandText = "SELECT * FROM [BookingTable] INNER JOIN [User] ON [BookingTable].idUser =  [User].idUser inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [User].idUser = (SELECT idUser FROM Customer WHERE idCustomer = ?)"
+                                            cmdPrep.parameters.Append cmdPrep.createParameter("idCustomer",3,1, ,CInt(idCustomer))   
+                                        elseif (not isnull(idUser) and trim(idUser) <> "") then
+                                            cmdPrep.CommandText = "SELECT * FROM [BookingTable] INNER JOIN [User] ON [BookingTable].idUser =  [User].idUser inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [User].idUser = ?"
+                                            cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))   
+                                        end if         
                                         set result = cmdPrep.execute
                                         Dim i
                                         i = 1

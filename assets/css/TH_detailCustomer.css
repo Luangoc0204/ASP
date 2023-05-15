@@ -108,6 +108,7 @@
     box-shadow: rgb(212, 212, 212) 28px 28px 45px, rgb(255, 255, 255) -28px -28px 45px;
     border-radius: 50%;
     overflow: hidden;
+    object-fit: cover;
 }
 
 .dish-rating {

@@ -132,7 +132,7 @@
                                     </div>
                                     <a href="TH_detailCustomer.asp?idUser=<%=result("idUser")%>">
                                         <img src="./assets/images/icon_information_line.png" alt="">
-                                        My Info rmation</a>
+                                        My Information</a>
                                     <a href="logout.asp">
                                         <img src="./assets/images/icon_logout.png" alt="">
                                         Logout</a>
