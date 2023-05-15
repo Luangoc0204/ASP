@@ -93,12 +93,16 @@
         id="menu">
         <div class="sec-wp">
             <div class="container">
-
                 <div class="menu-tab-wp">
                     <div class="row">
                         <div class="col-lg-12 m-auto">
                             <div class="menu-tab text-center">
                                 <!-- Main  -->
+                <%
+                    idCustomer = Request.QueryString("idCustomer")
+                    idUser = Request.QueryString("idUser")
+                    if ( (not isnull(idCustomer) and trim(idCustomer) <> "") or (not isnull(idUser) and trim(idUser) <> "" and Session("role") = "CUSTOMER") ) then
+                %>
                                 <ul class="filters" style="position: absolute; left: 50%; transform: translateX(-50%);">
                                     <div class="filter-active"></div>
                                     <li class="filter" data-filter=".all, .employee, .chef">
@@ -108,8 +112,10 @@
                                     </li>
                                 </ul>
                                 <!-- Search Date -->
-                                  
                                 <!--  -->
+                <%
+                    end if
+                %>
                             </div>
                         </div>
                     </div>
@@ -118,13 +124,27 @@
                 <div class="body-detail" style="display: flex;justify-content: space-around;">
                     <div class="detail-list" style="margin-top: -10%;">
                                 <%
-                                    idCustomer = Request.QueryString("idCustomer")
+                                    
                                     set cmdPrep = Server.CreateObject("ADODB.Command")
                                     cmdPrep.ActiveConnection = connDB
                                     cmdPrep.CommandType = 1
                                     cmdPrep.Prepared = True
-                                    cmdPrep.CommandText = "SELECT * FROM [User] INNER JOIN [Customer] ON [User].idUser = [Customer].idUser WHERE idCustomer = ?"
-                                    cmdPrep.parameters.Append cmdPrep.createParameter("idCustomer",3,1, ,CInt(idCustomer))
+                                    if (not isnull(idCustomer) and trim(idCustomer) <> "") then
+                                    'nếu idCustomer khác null và không rỗng
+                                        cmdPrep.CommandText = "SELECT * FROM [User] INNER JOIN [Customer] ON [User].idUser = [Customer].idUser WHERE idCustomer = ?"
+                                        cmdPrep.parameters.Append cmdPrep.createParameter("idCustomer",3,1, ,CInt(idCustomer))
+                                    elseif (not isnull(idUser) and trim(idUser) <> "") then
+                                        if (not isnull(Session("role")) AND TRIM(Session("role")) <>"" AND Session("role") = "ADMIN") then
+                                            cmdPrep.CommandText = "SELECT * FROM [User] WHERE idUser = ?"
+                                            cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
+                                        elseif (not isnull(Session("role")) AND TRIM(Session("role")) <>"" AND Session("role") = "EMPLOYEE") then
+                                            cmdPrep.CommandText = "SELECT * FROM [User] inner join Employee on [User].idUser = Employee.idUser WHERE [User].idUser = ?"
+                                            cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
+                                        elseif (not isnull(Session("role")) AND TRIM(Session("role")) <>"" AND Session("role") = "CUSTOMER") then
+                                            cmdPrep.CommandText = "SELECT * FROM [User] inner join Customer on [User].idUser = Customer.idUser WHERE [User].idUser = ?"
+                                            cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
+                                        end if    
+                                    end if    
                                     set result = cmdPrep.execute
                                 %>
                         <div class="dish-box text-center">
@@ -151,7 +171,11 @@
                                         <tr>                                                      
                                             <th>Address:</th>
                                             <td><%=result("address")%></td>
-                                        </tr>                 
+                                        </tr>    
+                                        <%
+                                            if (not isnull(idCustomer) and trim(idCustomer) <> "") then
+                                            'nếu có idCustomer -> admin đang xem thông tin customer
+                                        %>
                                         <tr>                                                      
                                             <th>Discount:</th>
                                             <td><%=result("discount")%>%</td>
@@ -160,7 +184,36 @@
                                             <th>Amount Booking:</th>
                                             <td><%=result("amountBooking")%></td>
                                         </tr>
-                            
+                                        <%
+                                            elseif (not isnull(idUser) and trim(idUser) <> "") then
+                                            'nếu có idUser -> người dùng đang tự xem thông tin của mình
+                                                'nếu là Employee thì hiện position và salary
+                                                if (not isnull(Session("role")) AND TRIM(Session("role")) <>"" AND Session("role") = "EMPLOYEE") then
+                                        %>
+                                        <tr>                                                      
+                                            <th>Salary:</th>
+                                            <td><%=result("salary")%>%</td>
+                                        </tr>
+                                        <tr>                                                      
+                                            <th>Position:</th>
+                                            <td><%=result("position")%></td>
+                                        </tr>
+                                        <%
+                                                elseif (not isnull(Session("role")) AND TRIM(Session("role")) <>"" AND Session("role") = "CUSTOMER") then
+                                                'nếu là Customer thì hiện discount và amount booking
+                                        %>
+                                        <tr>                                                      
+                                            <th>Discount:</th>
+                                            <td><%=result("discount")%>%</td>
+                                        </tr>
+                                        <tr>                                                      
+                                            <th>Amount Booking:</th>
+                                            <td><%=result("amountBooking")%></td>
+                                        </tr>
+                                        <%        
+                                                end if
+                                            end if
+                                        %>
                                     </table>  
                             </div>
                             <div class="dist-bottom-row" style="margin-top: 40px;">
@@ -171,17 +224,26 @@
                                             <span>Edit</span>
                                         </button>
                                     </li>
+                                    <%
+                                        if (not isnull(idCustomer) and trim(idCustomer) <>"" and  not isnull(Session("role")) AND TRIM(Session("role")) <>"" AND Session("role") = "ADMIN") then
+                                    %>
                                     <li>
                                         <button class="dish-add-btn btn-add-to-cart">
                                             <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>
                                             <span style="padding-left: 5px;">Delete</span>
                                         </button>
                                     </li>
+                                    <%
+                                        end if
+                                    %>
                                 </ul>
                             </div>
                         </div>
                     </div>
                     <!--  -->
+                    <%
+                        if ( (not isnull(idCustomer) and trim(idCustomer) <> "") or (not isnull(idUser) and trim(idUser) <> "" and Session("role") = "CUSTOMER") ) then
+                    %>
                     <div class="info-list">
                         
                         <!--  -->
@@ -245,6 +307,9 @@
                         </div>
                         <!--  -->
                     </div>
+                    <%
+                        end if
+                    %>
                 </div>
             </div>
         </div>

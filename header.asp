@@ -130,9 +130,9 @@
                                             <span class="email_User"><%=result("email")%></span>
                                         </div>
                                     </div>
-                                    <a href="TH_detailCustomer.asp">
+                                    <a href="TH_detailCustomer.asp?idUser=<%=result("idUser")%>">
                                         <img src="./assets/images/icon_information_line.png" alt="">
-                                        My Information</a>
+                                        My Info rmation</a>
                                     <a href="logout.asp">
                                         <img src="./assets/images/icon_logout.png" alt="">
                                         Logout</a>
