@@ -46,11 +46,12 @@
                                     </li>
                                 </ul>
                                 <!-- Add Human -->
-                                <ul class="filters add-human" style="padding: 10px 20px;">
+                                <a href="TH_AddTable.asp" class="add-human">
+                                    <ul class="filters " style="padding: 10px 20px;">
                                     <i class="fa-solid fa-circle-plus" style="color: #ff8243; font-weight: 900;font-size: 44px;padding-right: 5px;"></i>
-                                    Add table
-                                    </li>
+                                        Add table
                                 </ul>
+                                </a>
                                 <!--  -->
                             </div>
                         </div>
