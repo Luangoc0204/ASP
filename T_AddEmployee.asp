@@ -138,7 +138,7 @@
 <body>
     <!-- #include file="header.asp" -->
     <div class="div_container">
-        <form action="" method="post" >
+        <form action="" method="post" style="width: 25%">
             <div class="container_0">
                 <h1 class="header_0">Add Employee</h1>
                 <div class="header__one">
@@ -177,18 +177,18 @@
                 <%
                     If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;"><%=Session("ErrorTitle")%></p>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>
                 <%
                     Session.Contents.Remove("ErrorTitle")
                     else
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px;"></p>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 100%; white-space: break-spaces;"></p>
                 <%
                     end if
                 %>
                 <div class="controls">
                     <div class="controls_1">
-                        <button type="submit" class="btn btn-primary key">Set</button>
+                        <button type="submit" class="btn btn-primary key" id="btn-submit">Set</button>
                         <a href="TH_QL_quanlyNV.asp" type="button" class="btn btn-primary key">Cancel</a>
                     </div>
                 </div>
@@ -205,5 +205,6 @@
     
     <!-- header js -->
     <script src="./assets/javascript/L_header.js"></script>
+    <script src="./assets/javascript/T_AddEmployee.js"></script>
 </body>
 </html>
