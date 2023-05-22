@@ -102,7 +102,7 @@
                 <div class="header__one">
                     <div class="header_1">
                         <p class="header_title">Type:</p>
-                        <input type="number" class="header_2" id="typeTable" name="typeTable" value="<%=typeTable%>">
+                        <input type="number" min="1" class="header_2" id="typeTable" name="typeTable" value="<%=typeTable%>">
                     </div>
                     <div class="header_1">
                         <p class="header_title">Amount:</p>
@@ -116,13 +116,11 @@
                 <%
                     If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;"><%=Session("ErrorTitle")%></p>
-                <%
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                <%
                     Session.Contents.Remove("ErrorTitle")
                     else
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px;"></p>
-                <%
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 100%; white-space: break-spaces;"></p>                <%
                     end if
                 %>
                 <div class="controls">
@@ -131,12 +129,12 @@
                     ' true
                     if (cint(idTable) = 0) then
                 %>
-                    <button type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Add</button>
+                    <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Add</button>
                 <%    
                     ' false
                     Else
                 %>
-                    <button type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Set</button>
+                    <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Set</button>
                 <%
                     End if
                 %>
@@ -156,5 +154,6 @@
     
     <!-- header js -->
     <script src="./assets/javascript/L_header.js"></script>
+    <script src="./assets/javascript/TH_AddTable.js"></script>
 </body>
 </html>

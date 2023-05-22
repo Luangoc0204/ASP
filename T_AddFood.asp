@@ -49,14 +49,7 @@
                 cmdPrep.ActiveConnection = connDB
                 cmdPrep.CommandType = 1
                 cmdPrep.Prepared = True
-                cmdPrep.CommandText = "INSERT INTO Food(nameFood, imgFood, typeFood, forPerson, priceFood, amountFood) VALUES (?,?,?,?,?,?)"
-                cmdPrep.parameters.Append cmdPrep.createParameter("nameFood",202,1,255,nameFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("imgFood",202,1,255,imgFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("typeFood",202,1,255,typeFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("forPerson",202,1,255,forPerson)
-                cmdPrep.parameters.Append cmdPrep.createParameter("priceFood",202,1,255,priceFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("amountFood",202,1,255,amountFood)
-
+                cmdPrep.CommandText = "INSERT INTO Food(nameFood, imgFood, typeFood, forPerson, priceFood, amountFood) VALUES ('"&nameFood&"','"&imgFood&"','"&typeFood&"','"&forPerson&"','"&priceFood&"','"&amountFood&"')"
                 cmdPrep.execute
                 Session("Success") = "New food added!"
                 Response.redirect("L_menu.asp")
@@ -71,15 +64,7 @@
                 cmdPrep.ActiveConnection = connDB
                 cmdPrep.CommandType = 1
                 cmdPrep.Prepared = True
-                cmdPrep.CommandText = "UPDATE Food SET nameFood=?, imgFood=?, typeFood=?, forPerson=?, priceFood=?, amountFood=? WHERE idFood=?"
-                cmdPrep.parameters.Append cmdPrep.createParameter("nameFood",202,1,255,nameFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("imgFood",202,1,255,imgFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("typeFood",202,1,255,typeFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("forPerson",202,1,255,forPerson)
-                cmdPrep.parameters.Append cmdPrep.createParameter("priceFood",202,1,255,priceFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("amountFood",202,1,255,amountFood)
-                cmdPrep.parameters.Append cmdPrep.createParameter("idFood",202,1,255,idFood)
-
+                cmdPrep.CommandText = "UPDATE Food SET nameFood='"&nameFood&"', imgFood='"&imgFood&"', typeFood='"&typeFood&"', forPerson='"&forPerson&"', priceFood='"&priceFood&"', amountFood='"&amountFood&"' WHERE idFood='"&idFood&"'"
                 cmdPrep.execute
                 Session("Success") = "The food was edited!"
                 Response.redirect("L_menu.asp")
@@ -105,7 +90,7 @@
     <!-- #include file="header.asp" -->
     <div class="div_container">
     
-        <form method="post">
+        <form method="post" style="width: 25%">
             <div class="container_0">
                 <h1 class="header_0">Add Food</h1>
                 <div class="header__one">
@@ -127,21 +112,30 @@
                     </div>
                     <div class="header_1">
                         <p class="header_title">For person:</p>
-                        <input type="number" class="header_2" id="forperson" name="forPerson" value="<%=forPerson%>">
+                        <input type="number" min="1" class="header_2" id="forPerson" name="forPerson" value="<%=forPerson%>">
                     </div>
                     <div class="header_1">
                         <p class="header_title">Price:</p>
-                        <input type="text" class="header_2" id="price" name="priceFood" value="<%=priceFood%>">
+                        <input type="text" class="header_2" id="priceFood" name="priceFood" value="<%=priceFood%>">
                     </div>
                     <div class="header_1">
                         <p class="header_title">Amount:</p>
-                        <input type="text" class="header_2" id="amount" name="amountFood" value="<%=amountFood%>"> 
+                        <input type="number" min="1" class="header_2" id="amountFood" name="amountFood" value="<%=amountFood%>"> 
                     </div>
                 </div>
-                <p class="p_error" style="padding: 5px 10px; height: 18px;"></p>
+                <%
+                    If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
+                %>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                <%
+                    Session.Contents.Remove("ErrorTitle")
+                    else
+                %>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 100%; white-space: break-spaces;"></p>                <%
+                    end if
+                %>
                 <div class="controls">
                     <div class="controls_1">
-                        <button type="submit" class="btn btn-primary key">Set</button>
+                        <button type="submit" id="btn-submit" class="btn btn-primary key" style="padding: 0px 46px;">Set</button>
                         <a href="L_menu.asp" type="button" class="btn btn-primary">Cancel</a>
                     </div>
                 </div>
@@ -158,5 +152,6 @@
 
     <!-- header js -->
     <script src="./assets/javascript/L_header.js"></script>
+    <script src="./assets/javascript/TH_AddFood.js"></script>
 </body>
 </html>

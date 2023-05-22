@@ -141,12 +141,14 @@
                                             </button>
                                         </li>
                                         </a>
+                                        <a href="T_deleteEmployee.asp?idEmployee=<%=result("idEmployee")%>">
                                         <li>
                                             <button class="dish-add-btn btn-add-to-cart">
                                                 <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>
                                                 <span style="padding-left: 5px;">Delete</span>
                                             </button>
                                         </li>
+                                        </a>
                                     </ul>
                                 </div>
                             </div>
