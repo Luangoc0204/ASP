@@ -23,7 +23,6 @@
   border-radius: 10px;
   background: linear-gradient(145deg, #ececec, #ffffff);
   box-shadow: 28px 28px 45px #d4d4d4, -28px -28px 45px #ffffff;
-  transition: 0.8s cubic-bezier(0.22, 0.78, 0.45, 1.02);
 }
 .thong_tin_restaurant{
   text-align: center;
@@ -35,6 +34,18 @@
 }
 .chi_tiet_restaurant{
   margin-left: 30px;
+}
+#time{
+  margin-left: 10px; 
+  margin-bottom: 4px; 
+  display: flex;
+}
+.btn-saveTime{
+  margin-left: 15px; 
+  font-size: 12px; 
+  height: 29px;
+  margin-top: -1px;
+  display: none;
 }
 .card{
   width: 50%;

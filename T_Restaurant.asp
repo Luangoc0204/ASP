@@ -73,52 +73,42 @@
                     <div class="chi_tiet_restaurant">
                         <div style="display: inline-flex">
                             <div></div>
-                            <h6>Time:</h6>
-                            <span id="time" style="margin-left: 10px; display: flex;">
+                            <h6 style="margin-top: 2px;">Time:</h6>
+                            <span id="time">
                                 <span id="timeOpen"><%=timeOpen%></span>
-                                <input type="time" id="input_timeOpen" style="display: none;" value="<%=timeOpen%>">
-                                <span style="margin: 0 5px;">-</span>
+                                <span class="gach_ngang" style="margin: 0 5px;">-</span>
                                 <span id="timeClose"><%=timeClose%></span>
-                                <input type="time" id="input_timeClose" style="display: none;" value="<%=timeClose%>">
                             </span>
-                            <i id="edit-icon" style="color: #ff8243; font-size: 17px; margin-left: 15px; margin-top: 2px;" class="fa fa-edit" onclick="editTime()"></i> 
-                            <button type="submit" class="btn btn-success btn-saveTime" style="">Save</button>
+                            <i id="edit-icon" style="color: #ff8243; font-size: 17px; margin-left: 15px; margin-top: 2px;" class="fa fa-edit"></i> 
+                            <button type="submit" class="btn btn-success btn-saveTime">Save</button>
                         </div>
                     </div>
                     <div class="content" style="display: flex; margin-top: 20px;">
                         <div class="card" style="width: 50%; margin-right: 12px; margin-left: 5px; ">
                             <div class="card-header border-0">
                                 <div class="d-flex justify-content-between">
-                                    <h3 class="card-title">Online Store Visitors</h3>
-                                    <a href="javascript:void(0);">View Report</a>
+                                    <h3 class="card-title" style="color: #ff8243;">Revenue Per Month</h3>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="d-flex">
                                     <p class="d-flex flex-column">
-                                    <span class="text-bold text-lg">820</span>
-                                    <span>Visitors Over Time</span>
+                                    <span class="text-bold text-lg">
+                                        <span class="revenue-this-month"></span>
+                                        <span>$</span>
+                                    </span>
+                                    <span>This month</span>
                                     </p>
                                     <p class="ml-auto d-flex flex-column text-right">
-                                    <span class="text-success">
-                                        <i class="fas fa-arrow-up"></i> 12.5%
+                                    <span class="text-success text-revenue-month">
+                                        
                                     </span>
-                                    <span class="text-muted">Since last week</span>
+                                    <span class="text-muted">Since last month</span>
                                     </p>
                                 </div>
             
                                 <div class="position-relative mb-4">
                                     <canvas id="visitors-chart" height="200"></canvas>
-                                </div>
-            
-                                <div class="d-flex flex-row justify-content-end">
-                                    <span class="mr-2">
-                                    <i class="fas fa-square text-primary"></i> This Week
-                                    </span>
-                
-                                    <span>
-                                    <i class="fas fa-square text-gray"></i> Last Week
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -126,35 +116,28 @@
                         <div class="card" style="width: 50%; margin-right: 5px;">
                             <div class="card-header border-0">
                                 <div class="d-flex justify-content-between">
-                                    <h3 class="card-title">Sales</h3>
-                                    <a href="javascript:void(0);">View Report</a>
+                                    <h3 class="card-title" style="color: #ff8243;">Revenue Per Day</h3>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="d-flex">
                                     <p class="d-flex flex-column">
-                                    <span class="text-bold text-lg">$18,230.00</span>
-                                    <span>Sales Over Time</span>
+                                    <span class="text-bold text-lg">
+                                        <span class="revenue-this-day"></span>
+                                        <span>$</span>
+                                    </span>
+                                    <span>This Day</span>
                                     </p>
                                     <p class="ml-auto d-flex flex-column text-right">
-                                    <span class="text-success">
-                                        <i class="fas fa-arrow-up"></i> 33.1%
+                                    <span class="text-success text-revenue-day">
+                                        
                                     </span>
-                                    <span class="text-muted">Since last month</span>
+                                    <span class="text-muted">Since last day</span>
                                     </p>
                                 </div>
             
                                 <div class="position-relative mb-4">
                                     <canvas id="sales-chart" height="200"></canvas>
-                                </div>
-            
-                                <div class="d-flex flex-row justify-content-end">
-                                    <span class="mr-2">
-                                    <i class="fas fa-square text-primary"></i> This year
-                                    </span>
-                                    <span>
-                                    <i class="fas fa-square text-gray"></i> Last year
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -180,7 +163,7 @@
     <!-- AdminLTE for demo purposes -->
     <!-- <script src="dist/js/demo.js"></script> -->
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-    <script src="dist/js/pages/dashboard3.js"></script>
+    <!--<script src="dist/js/pages/dashboard3.js"></script>-->
 
     <script src="./assets/javascript/T_Restaurant.js"></script>
 </body>

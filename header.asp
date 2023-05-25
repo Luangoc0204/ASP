@@ -55,6 +55,8 @@
                                                     style="width: 100%; border-radius: 0;">Employees</a></li>
                                             <li style="width: 100%; margin: 0;"><a class="dropdown-item" href="TH_listCustomer.asp"
                                                     style="width: 100%; border-radius: 0;">Customers</a></li>
+                                            <li style="width: 100%; margin: 0;"><a class="dropdown-item" href="T_Restaurant.asp"
+                                                    style="width: 100%; border-radius: 0;">Restaurant</a></li>
                                             <%
                                                 end if
                                             %>

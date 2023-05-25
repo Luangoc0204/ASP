@@ -15,7 +15,16 @@
     idFoodBuyNow = Request.QueryString("idFoodBuyNow")
     amountFoodBuyNow = Request.QueryString("amountFoodBuyNow")
     'Response.write("idCart: "+ TypeName(idCart) + CStr(idCart) + "<br>")
-    datetimeCF = CStr(Now())
+    dim currentDate
+    currentDate = Date()
+    'dim year, month, day
+    yearTemp = Year(currentDate)
+    monthTemp = Right("0" & Month(currentDate), 2)
+    dayTemp = Right("0" & Day(currentDate), 2)
+    dim formattedDate
+    formattedDate = yearTemp & "/" & monthTemp & "/" & dayTemp
+    timeCF = CStr(FormatDateTime(Now(), 3))
+    datetimeCF = formattedDate & " " & timeCF
     datetimeCF = Replace(datetimeCF, "SA", "AM")
     datetimeCF = Replace(datetimeCF, "CH", "PM")
     'Response.write("datetimeCF: "+ datetimeCF + "<br>")
@@ -30,7 +39,7 @@
             cmdPrep.CommandType = 1
             cmdPrep.Prepared = True
             cmdPrep.CommandText = "SET NOCOUNT ON;UPDATE CartFood SET datetimeCF = convert(datetime, ?), isPay = 1 WHERE idCartFood = ?"
-            cmdPrep.parameters.Append cmdPrep.createParameter("datetimeCF",202,1,255,CStr(datetimeCF))
+            cmdPrep.parameters.Append cmdPrep.createParameter("datetimeCF",202,1,255,datetimeCF)
             cmdPrep.parameters.Append cmdPrep.createParameter("idCartFood", 3, 1, , CInt(idCartFood))
             cmdPrep.execute
         Next
@@ -62,4 +71,5 @@
     idBill = result(0).Value
     Response.write(CStr(idBill))
     Session("Success") = "Purchase cart successfully"
+    connDB.Close
 %>

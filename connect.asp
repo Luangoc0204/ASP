@@ -4,7 +4,7 @@
     ' gõ obj + enter là ra cái bên dưới
     set connDB = Server.CreateObject("ADODB.Connection")
     Dim strConnection
-    strConnection = "Provider=SQLOLEDB.1;Data Source=MSI\SQLEXPRESS;Database=QLNH;User ID=demo;Password=12345678"
+    strConnection = "Provider=SQLOLEDB.1;Data Source=MSI;Database=QLNH;User ID=sa;Password=123456"
     connDB.ConnectionString = strConnection
     'connDB.Open
 %>
