@@ -53,10 +53,18 @@
             set result = cmdPrep.execute
             'Kiểm tra kết quả result ở đây
             if not result.EOF then
-                'nếu có tồn tại phone
-                Session("ErrorTitle") = "Phone is existed!"
-                connDB.Close
+                'nếu có tồn tại phone trùng với phone của employee
+                If (result("phone") = phone) Then
+                    ' true
+                    Response.redirect("TH_QL_quanlyNV.asp")
+                Else
+                    ' false
+                    Session("ErrorTitle") = "Phone is existed!"
+                    connDB.Close
+                End if
             else
+                'transactionư
+                
                 if (cint(idEmployee) = 0) then
             
                     'nếu không có idEmployee -> thực hiện Add Employee
