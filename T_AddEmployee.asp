@@ -42,28 +42,73 @@
         email = Request.form("email")
         salary = Request.form("salary")
         position = Request.form("position")
+        'tạo một Function để sử dụng lại
+        Function updateEmployee()
+            ' Do Something...
+            Set cmdPrep = Server.CreateObject("ADODB.Command")
+            cmdPrep.ActiveConnection = connDB
+            cmdPrep.CommandType = 1
+            cmdPrep.Prepared = True
+            cmdPrep.CommandText = "SET NOCOUNT ON; UPDATE [User] SET nameUser=?, birthday=?, phone=?, address=?, email=? WHERE idUser=(select idUser from Employee where idEmployee = ? )"
+            cmdPrep.parameters.Append cmdPrep.createParameter("nameUser",202,1,255,nameUser)
+            cmdPrep.parameters.Append cmdPrep.createParameter("birthday",202,1,255,birthday)
+            cmdPrep.parameters.Append cmdPrep.createParameter("phone",202,1,255,phone)
+            cmdPrep.parameters.Append cmdPrep.createParameter("address",202,1,255,address)
+            cmdPrep.parameters.Append cmdPrep.createParameter("email",202,1,255,email)
+            cmdPrep.parameters.Append cmdPrep.createParameter("idEmployee",3,1,,CInt(idEmployee))
+                    
+            cmdPrep.execute
+            Set cmdPrep = Server.CreateObject("ADODB.Command")
+            cmdPrep.ActiveConnection = connDB
+            cmdPrep.CommandType = 1
+            cmdPrep.Prepared = True
+            cmdPrep.CommandText = "EXEC updateEmployee @idEmployee = ?, @salary = ?, @position = ?"
+            cmdPrep.parameters.Append cmdPrep.createParameter("idEmployee",3,1,,CInt(idEmployee))
+            cmdPrep.parameters.Append cmdPrep.createParameter("salary",202,1,255,salary)
+            cmdPrep.parameters.Append cmdPrep.createParameter("position",202,1,255,position)
 
+            cmdPrep.execute
+            Session("Success") = "Edit Employee Successfully!"
+            Response.redirect("TH_QL_quanlyNV.asp")
+        End Function
         if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(salary) and salary<>"" and NOT isnull(position) and position<>"") then
             connDB.Open()
             Set cmdPrep = Server.CreateObject("ADODB.Command")
             cmdPrep.ActiveConnection = connDB
             cmdPrep.CommandType = 1
             cmdPrep.Prepared = True
-            cmdPrep.CommandText = "select * from [User] where phone = '"&phone&"'"
+            cmdPrep.CommandText = "select [User].* from [User] where phone = '"&phone&"'"
             set result = cmdPrep.execute
             'Kiểm tra kết quả result ở đây
             if not result.EOF then
-                'nếu có tồn tại phone trùng với phone của employee
-                If (result("phone") = phone) Then
-                    ' true
-                    Response.redirect("TH_QL_quanlyNV.asp")
-                Else
-                    ' false
+                'nếu có tồn tại phone
+                phoneTemp = result("phone")
+                If (Cint(idEmployee) = 0) Then
+                    ' true -> nếu idEmployee = 0 mà lại tồn tại phone -> phone đã tồn tại cho người khác
                     Session("ErrorTitle") = "Phone is existed!"
                     connDB.Close
+                Else
+                    ' false ->nếu idEmployee # 0 mà lại tồn tại phone -> ktra xem phone có phải của Employee này hay không
+                    Set cmdPrep = Server.CreateObject("ADODB.Command")
+                    cmdPrep.ActiveConnection = connDB
+                    cmdPrep.CommandType = 1
+                    cmdPrep.Prepared = True
+                    cmdPrep.CommandText = "select [User].*, idEmployee, salary, position from [User] inner join [Employee] on [User].idUser = [Employee].idUser where idEmployee = "&idEmployee&""
+                    set result = cmdPrep.execute
+                    If (result("phone") = phoneTemp) Then
+                        ' true -> nếu phone của Employee = phone gửi theo form -> chính là Employee đó đang dùng phone -> update
+                        updateEmployee()
+                        connDB.Close
+                        Response.redirect("TH_QL_quanlyNV.asp")
+                    Else
+                        ' false -> ngược lại thì không phải phone của Employee
+                        Session("ErrorTitle") = "Phone is existed!"
+                        connDB.Close
+                    End if
                 End if
+                
             else
-                'transactionư
+                'transaction
                 
                 if (cint(idEmployee) = 0) then
             
@@ -111,31 +156,7 @@
                     Response.redirect("TH_QL_quanlyNV.asp")
                 else          
                     'nếu có idEmployee -> thực hiện Edit
-                    Set cmdPrep = Server.CreateObject("ADODB.Command")
-                    cmdPrep.ActiveConnection = connDB
-                    cmdPrep.CommandType = 1
-                    cmdPrep.Prepared = True
-                    cmdPrep.CommandText = "SET NOCOUNT ON; UPDATE [User] SET nameUser=?, birthday=?, phone=?, address=?, email=? WHERE idUser=(select idUser from Employee where idEmployee = ? )"
-                    cmdPrep.parameters.Append cmdPrep.createParameter("nameUser",202,1,255,nameUser)
-                    cmdPrep.parameters.Append cmdPrep.createParameter("birthday",202,1,255,birthday)
-                    cmdPrep.parameters.Append cmdPrep.createParameter("phone",202,1,255,phone)
-                    cmdPrep.parameters.Append cmdPrep.createParameter("address",202,1,255,address)
-                    cmdPrep.parameters.Append cmdPrep.createParameter("email",202,1,255,email)
-                    cmdPrep.parameters.Append cmdPrep.createParameter("idEmployee",3,1,,CInt(idEmployee))
-                    
-                    cmdPrep.execute
-                    Set cmdPrep = Server.CreateObject("ADODB.Command")
-                    cmdPrep.ActiveConnection = connDB
-                    cmdPrep.CommandType = 1
-                    cmdPrep.Prepared = True
-                    cmdPrep.CommandText = "EXEC updateEmployee @idEmployee = ?, @salary = ?, @position = ?"
-                    cmdPrep.parameters.Append cmdPrep.createParameter("idEmployee",3,1,,CInt(idEmployee))
-                    cmdPrep.parameters.Append cmdPrep.createParameter("salary",202,1,255,salary)
-                    cmdPrep.parameters.Append cmdPrep.createParameter("position",202,1,255,position)
-
-                    cmdPrep.execute
-                    Session("Success") = "The employee was edited!"
-                    Response.redirect("TH_QL_quanlyNV.asp")
+                    updateEmployee()
                 end if
             end if
             
