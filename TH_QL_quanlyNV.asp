@@ -141,7 +141,7 @@
                                             </button>
                                         </li>
                                         </a>
-                                        <a href="T_deleteEmployee.asp?idEmployee=<%=result("idEmployee")%>">
+                                        <a href="L_deleteEmployee.asp?idEmployee=<%=result("idEmployee")%>">
                                         <li>
                                             <button class="dish-add-btn btn-add-to-cart">
                                                 <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>

@@ -17,7 +17,6 @@
             cmdPrep.CommandText = "SELECT * FROM Employee inner join [User] on Employee.idUser = [User].idUser WHERE idEmployee=?"
             cmdPrep.Parameters(0) = idEmployee    
             Set result = cmdPrep.execute
-
             If not result.EOF then
                 idUser = result("idUser")
                 nameUser = result("nameUser")
@@ -25,7 +24,6 @@
                 phone = result("phone")
                 address = result("address")
                 email = result("email")
-                avatar = result("avatar")
                 salary = result("salary")
                 position = result("position")
             End If
@@ -33,80 +31,139 @@
             connDB.close
         End if
     Else
-
         idEmployee = Request.QueryString("idEmployee")
-        if (isnull (idEmployee) OR trim(idEmployee) = "") then idEmployee=0 end if
+        if (isnull (idEmployee) OR trim(idEmployee) = "") then 
+            idEmployee=0 
+        end if
         nameUser = Request.form("nameUser")
         birthday = Request.form("birthday")  
         phone = Request.form("phone")   
         address = Request.form("address")
         email = Request.form("email")
-        avatar = Request.form("avatar")
         salary = Request.form("salary")
         position = Request.form("position")
-
-        if (cint(idEmployee) = 0) then
-            if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(avatar) and avatar<>"" and NOT isnull(salary) and salary<>"" and NOT isnull(position) and position<>"") then
-
-                Dim formattedPass
-                formattedPass = FormatDateTime(birthday, 2)
-                password2 = Replace(formattedPass, "/", "")
-                Set cmdPrep = Server.CreateObject("ADODB.Command")
-                connDB.Open()
-                cmdPrep.ActiveConnection = connDB
-                cmdPrep.CommandType = 1
-                cmdPrep.Prepared = True
-                cmdPrep.CommandText = "SET NOCOUNT ON; INSERT INTO [User](nameUser, birthday, phone, address, email, avatar) VALUES ('"&nameUser&"','"&birthday&"','"&phone&"','"&address&"','"&email&"','"&avatar&"'); SELECT SCOPE_IDENTITY() as ID"
-                set result = cmdPrep.execute
+        'tạo một Function để sử dụng lại
+        Function updateEmployee()
+            ' Do Something...
+            Set cmdPrep = Server.CreateObject("ADODB.Command")
+            cmdPrep.ActiveConnection = connDB
+            cmdPrep.CommandType = 1
+            cmdPrep.Prepared = True
+            cmdPrep.CommandText = "SET NOCOUNT ON; UPDATE [User] SET nameUser=?, birthday=?, phone=?, address=?, email=? WHERE idUser=(select idUser from Employee where idEmployee = ? )"
+            cmdPrep.parameters.Append cmdPrep.createParameter("nameUser",202,1,255,nameUser)
+            cmdPrep.parameters.Append cmdPrep.createParameter("birthday",202,1,255,birthday)
+            cmdPrep.parameters.Append cmdPrep.createParameter("phone",202,1,255,phone)
+            cmdPrep.parameters.Append cmdPrep.createParameter("address",202,1,255,address)
+            cmdPrep.parameters.Append cmdPrep.createParameter("email",202,1,255,email)
+            cmdPrep.parameters.Append cmdPrep.createParameter("idEmployee",3,1,,CInt(idEmployee))
+                    
+            cmdPrep.execute
+            Set cmdPrep = Server.CreateObject("ADODB.Command")
+            cmdPrep.ActiveConnection = connDB
+            cmdPrep.CommandType = 1
+            cmdPrep.Prepared = True
+            cmdPrep.CommandText = "EXEC updateEmployee @idEmployee = ?, @salary = ?, @position = ?"
+            cmdPrep.parameters.Append cmdPrep.createParameter("idEmployee",3,1,,CInt(idEmployee))
+            cmdPrep.parameters.Append cmdPrep.createParameter("salary",202,1,255,salary)
+            cmdPrep.parameters.Append cmdPrep.createParameter("position",202,1,255,position)
+            cmdPrep.execute
+            Session("Success") = "Edit Employee Successfully!"
+            Response.redirect("TH_QL_quanlyNV.asp")
+        End Function
+        if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(salary) and salary<>"" and NOT isnull(position) and position<>"") then
+            connDB.Open()
+            Set cmdPrep = Server.CreateObject("ADODB.Command")
+            cmdPrep.ActiveConnection = connDB
+            cmdPrep.CommandType = 1
+            cmdPrep.Prepared = True
+            cmdPrep.CommandText = "select [User].* from [User] where phone = '"&phone&"'"
+            set result = cmdPrep.execute
+            'Kiểm tra kết quả result ở đây
+            if not result.EOF then
+                'nếu có tồn tại phone
+                phoneTemp = result("phone")
+                If (Cint(idEmployee) = 0) Then
+                    ' true -> nếu idEmployee = 0 mà lại tồn tại phone -> phone đã tồn tại cho người khác
+                    Session("ErrorTitle") = "Phone is existed!"
+                    connDB.Close
+                Else
+                    ' false ->nếu idEmployee # 0 mà lại tồn tại phone -> ktra xem phone có phải của Employee này hay không
+                    Set cmdPrep = Server.CreateObject("ADODB.Command")
+                    cmdPrep.ActiveConnection = connDB
+                    cmdPrep.CommandType = 1
+                    cmdPrep.Prepared = True
+                    cmdPrep.CommandText = "select [User].*, idEmployee, salary, position from [User] inner join [Employee] on [User].idUser = [Employee].idUser where idEmployee = "&idEmployee&""
+                    set result = cmdPrep.execute
+                    If (result("phone") = phoneTemp) Then
+                        ' true -> nếu phone của Employee = phone gửi theo form -> chính là Employee đó đang dùng phone -> update
+                        updateEmployee()
+                        connDB.Close
+                        Response.redirect("TH_QL_quanlyNV.asp")
+                    Else
+                        ' false -> ngược lại thì không phải phone của Employee
+                        Session("ErrorTitle") = "Phone is existed!"
+                        connDB.Close
+                    End if
+                End if
                 
-                Dim newId
-                newId = result(0).Value
-                Response.write("New id: " + CStr(newId))
-                Set cmdPrep = Server.CreateObject("ADODB.Command")
-                cmdPrep.ActiveConnection = connDB
-                cmdPrep.CommandType = 1
-                cmdPrep.Prepared = True
-                cmdPrep.CommandText = "EXEC insertEmployee @idUser = '"&CInt(newId)&"', @salary = '"&salary&"', @position = '"&position&"'"
-                set result = cmdPrep.execute
-
-                set cmdPrep = Server.CreateObject("ADODB.Command")
-                cmdPrep.ActiveConnection = connDB
-                cmdPrep.CommandType = 1 
-                cmdPrep.Prepared = true 
-                sql_insertTAIKHOAN = "INSERT INTO Account(idUser, username, [password], [role]) VALUES('"&newId&"', '"&phone&"', '"&password2&"', 'EMPLOYEE')"
-                cmdPrep.CommandText = sql_insertTAIKHOAN
-                cmdPrep.execute
-                Session("idUser") = newId
-                Session("Success") = "Add employee successfully"
-                Response.redirect("TH_QL_quanlyNV.asp")
             else
-                Session("Error") = "You have to input enough info"
+                'transaction
+                
+                if (cint(idEmployee) = 0) then
+            
+                    'nếu không có idEmployee -> thực hiện Add Employee
+                    Dim formattedPass
+                    formattedPass = FormatDateTime(birthday, 2)
+                    password2 = Replace(formattedPass, "/", "")
+                    Set cmdPrep = Server.CreateObject("ADODB.Command")
+                    cmdPrep.ActiveConnection = connDB
+                    cmdPrep.CommandType = 1
+                    cmdPrep.Prepared = True
+                    cmdPrep.CommandText = "SET NOCOUNT ON; INSERT INTO [User](nameUser, birthday, phone, address, email) VALUES (?,?,?,?,?); SELECT SCOPE_IDENTITY() as ID"
+                    cmdPrep.parameters.Append cmdPrep.createParameter("nameUser",202,1,255,nameUser)
+                    cmdPrep.parameters.Append cmdPrep.createParameter("birthday",202,1,255,birthday)
+                    cmdPrep.parameters.Append cmdPrep.createParameter("phone",202,1,255,phone)
+                    cmdPrep.parameters.Append cmdPrep.createParameter("address",202,1,255,address)
+                    cmdPrep.parameters.Append cmdPrep.createParameter("email",202,1,255,email)
+                    set result = cmdPrep.execute
+                    
+                    Dim newId
+                    newId = result(0).Value
+                    Response.write("New id: " + CStr(newId))
+                    Set cmdPrep = Server.CreateObject("ADODB.Command")
+                    cmdPrep.ActiveConnection = connDB
+                    cmdPrep.CommandType = 1
+                    cmdPrep.Prepared = True
+                    cmdPrep.CommandText = "EXEC insertEmployee @idUser = ?, @salary = ?, @position = ?"
+                    cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1,,CInt(newId))
+                    cmdPrep.parameters.Append cmdPrep.createParameter("salary",202,1, 255,CStr(salary))
+                    cmdPrep.parameters.Append cmdPrep.createParameter("position",202,1,255,position)
+                    set result = cmdPrep.execute
+                    set cmdPrep = Server.CreateObject("ADODB.Command")
+                    cmdPrep.ActiveConnection = connDB
+                    cmdPrep.CommandType = 1 
+                    cmdPrep.Prepared = true 
+                    sql_insertTAIKHOAN = "INSERT INTO Account(idUser, username, [password], [role]) VALUES(?, ?, ?, 'EMPLOYEE')"
+                    cmdPrep.CommandText = sql_insertTAIKHOAN
+                    cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1 , ,newId)
+                    cmdPrep.parameters.Append cmdPrep.createParameter("username",202,1,255,phone)
+                    cmdPrep.parameters.Append cmdPrep.createParameter("password",202,1,255,password2)
+                    cmdPrep.execute
+                    Session("idUser") = newId
+                    Session("Success") = "Add employee successfully"
+                    Response.redirect("TH_QL_quanlyNV.asp")
+                else          
+                    'nếu có idEmployee -> thực hiện Edit
+                    updateEmployee()
+                end if
             end if
-        else          
-            if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(avatar) and avatar<>"" and NOT isnull(salary) and salary<>"" and NOT isnull(position) and position<>"") then
-
-                Set cmdPrep = Server.CreateObject("ADODB.Command")
-                connDB.Open()
-                cmdPrep.ActiveConnection = connDB
-                cmdPrep.CommandType = 1
-                cmdPrep.Prepared = True
-                cmdPrep.CommandText = "SET NOCOUNT ON; UPDATE [User] SET nameUser= '"&nameUser&"', birthday='"&birthday&"', phone='"&phone&"', address='"&address&"', email='"&email&"', avatar='"&avatar&"' WHERE idUser=(select idUser from Employee where idEmployee = '"&CInt(idEmployee)&"' )"                
-                cmdPrep.execute
-                Set cmdPrep = Server.CreateObject("ADODB.Command")
-                cmdPrep.ActiveConnection = connDB
-                cmdPrep.CommandType = 1
-                cmdPrep.Prepared = True
-                cmdPrep.CommandText = "EXEC updateEmployee @idEmployee = '"&CInt(idEmployee)&"', @salary = '"&salary&"', @position = '"&position&"'"
-                cmdPrep.execute
-                Session("Success") = "The employee was edited!"
-                Response.redirect("TH_QL_quanlyNV.asp")
-            else
-                Session("Error") = "You have to input enough info"
-            end if   
-        end if
+            
+        else
+            Session("ErrorTitle") = "You have to input enough info!!!"
+            connDB.Close
+        end if   
     End if         
 %>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -141,14 +198,10 @@
                     <div class="header_1">
                         <p class="header_title">Address:</p>
                         <input type="text" class="header_2" id="address" name="address" value="<%=address%>">
-                    </div>                   
+                    </div>
                     <div class="header_1">
                         <p class="header_title">Email:</p>
                         <input type="text" class="header_2" id="email" name="email" value="<%=email%>">
-                    </div>
-                    <div class="header_1">
-                        <p class="header_title">Avatar:</p>
-                        <input type="text" class="header_2" id="avatar" name="avatar" value="<%=avatar%>">
                     </div>
                     <div class="header_1">
                         <p class="header_title">Salary:</p>
@@ -165,17 +218,31 @@
                 <%
                     If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                <%
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>
+                <%
                     Session.Contents.Remove("ErrorTitle")
                     else
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 100%; white-space: break-spaces;"></p>                <%
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 100%; white-space: break-spaces;"></p>
+                <%
                     end if
                 %>
                 <div class="controls">
                     <div class="controls_1">
-                        <button type="submit" class="btn btn-primary key" id="btn-submit" style="padding: 0px 46px;">Set</button>
-                        <a href="TH_QL_quanlyNV.asp" type="button" class="btn btn-primary key">Cancel</a>
+                <%
+                    ' true
+                    if (cint(idEmployee) = 0) then
+                %>
+                    <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Add</button>
+                <%    
+                    ' false
+                    Else
+                %>
+                    <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Set</button>
+                <%
+                    End if
+                %>
+                        <a href="L_menu.asp" type="button" class="btn btn-primary key">Cancel</a>
                     </div>
                 </div>
             </div>

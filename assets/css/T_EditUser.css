@@ -49,6 +49,8 @@
     text-align: center;
     justify-content:center;
     width: 380px;
+    margin: auto;
+
 }
 .header_2{
     outline: none;

@@ -35,7 +35,7 @@
         imgTable = Request.form("imgTable")
 
         if (cint(idTable) = 0) then
-            if (NOT isnull(typeTable) and typeTable <> "" and NOT isnull(amountTable) and amountTable<>"" and NOT isnull(imgTable) and imgTable<>"") then
+            if (NOT isnull(typeTable) and TRIM(typeTable) <> "" and NOT isnull(amountTable) and TRIM(amountTable)<>"" and NOT isnull(imgTable) and TRIM(imgTable)<>"") then
 
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
                 connDB.Open()
@@ -50,7 +50,7 @@
                 Session("Error") = "You have to input enough info"
             end if
         else          
-            if (NOT isnull(typeTable) and typeTable <> "" and NOT isnull(amountTable) and amountTable<>"" and NOT isnull(imgTable) and imgTable<>"") then
+            if (NOT isnull(typeTable) and TRIM(typeTable)<> "" and NOT isnull(amountTable) and TRIM(amountTable)<>"" and NOT isnull(imgTable) and TRIM(imgTable)<>"") then
                 
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
                 connDB.Open()

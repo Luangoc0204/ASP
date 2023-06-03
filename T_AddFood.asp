@@ -42,8 +42,7 @@
         priceFood = Request.form("priceFood")
         amountFood = Request.form("amountFood")
         if (cint(idFood) = 0) then
-            if (NOT isnull(nameFood) and nameFood <> "" and NOT isnull(imgFood) and imgFood<>"" and NOT isnull(typeFood) and typeFood<>"" and NOT isnull(forPerson) and forPerson<>"" and NOT isnull(priceFood) and priceFood<>"" and NOT isnull(amountFood) and amountFood<>"") then
-
+            if (NOT isnull(nameFood) and TRIM(nameFood) <> "" and NOT isnull(imgFood) and TRIM(imgFood)<>"" and NOT isnull(typeFood) and TRIM(typeFood)<>"" and NOT isnull(forPerson) and TRIM(forPerson)<>"" and NOT isnull(priceFood) and TRIM(priceFood)<>"" and NOT isnull(amountFood) and TRIM(amountFood)<>"") then
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
                 connDB.Open()
                 cmdPrep.ActiveConnection = connDB
@@ -57,8 +56,7 @@
                 Session("Error") = "You have to input enough info"
             end if
         else          
-            if (NOT isnull(nameFood) and nameFood <> "" and NOT isnull(imgFood) and imgFood<>"" and NOT isnull(typeFood) and typeFood<>"" and NOT isnull(forPerson) and forPerson<>"" and NOT isnull(priceFood) and priceFood<>"" and NOT isnull(amountFood) and amountFood<>"") then
-                
+            if (NOT isnull(nameFood) and TRIM(nameFood)<> "" and NOT isnull(imgFood) and TRIM(imgFood)<>"" and NOT isnull(typeFood) and TRIM(typeFood)<>"" and NOT isnull(forPerson) and TRIM(forPerson)<>"" and NOT isnull(priceFood) and TRIM(priceFood)<>"" and NOT isnull(amountFood) and TRIM(amountFood)<>"") then         
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
                 connDB.Open()
                 cmdPrep.ActiveConnection = connDB
@@ -126,7 +124,8 @@
                 <%
                     If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                <%
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                
+                <%
                     Session.Contents.Remove("ErrorTitle")
                     else
                 %>
@@ -135,8 +134,20 @@
                 %>
                 <div class="controls">
                     <div class="controls_1">
-                        <button type="submit" id="btn-submit" class="btn btn-primary key" style="padding: 0px 46px;">Set</button>
-                        <a href="L_menu.asp" type="button" class="btn btn-primary">Cancel</a>
+                <%
+                    ' true
+                    if (cint(idFood) = 0) then
+                %>
+                    <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Add</button>
+                <%    
+                    ' false
+                    Else
+                %>
+                    <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Set</button>
+                <%
+                    End if
+                %>
+                        <a href="L_menu.asp" type="button" class="btn btn-primary key">Cancel</a>
                     </div>
                 </div>
             </div>

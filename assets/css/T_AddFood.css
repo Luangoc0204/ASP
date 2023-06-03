@@ -50,6 +50,7 @@
     text-align: center;
     justify-content:center;
     width: 380px;
+    margin: auto;
 }
 .ais-SortBy-select{
     outline: none;

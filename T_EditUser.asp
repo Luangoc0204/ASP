@@ -35,39 +35,74 @@
         email = Request.form("email")
         avatar = Request.form("avatar")
         password = Request.form("password")
+        ' Tạo một Function để sử dụng lại
+        Function updateUser()
+            ' Do Something...
+            Set cmdPrep = Server.CreateObject("ADODB.Command")
+            cmdPrep.ActiveConnection = connDB
+            cmdPrep.CommandType = 1
+            cmdPrep.Prepared = True
+            cmdPrep.CommandText = "UPDATE [User] SET nameUser=?, birthday=?, phone=?, address=?, email=?, avatar = ? WHERE idUser=?"
+            cmdPrep.parameters.Append cmdPrep.createParameter("nameUser",202,1,255,nameUser)
+            cmdPrep.parameters.Append cmdPrep.createParameter("birthday",202,1,255,birthday)
+            cmdPrep.parameters.Append cmdPrep.createParameter("phone",202,1,255,phone)
+            cmdPrep.parameters.Append cmdPrep.createParameter("address",202,1,255,address)
+            cmdPrep.parameters.Append cmdPrep.createParameter("email",202,1,255,email)
+            cmdPrep.parameters.Append cmdPrep.createParameter("avatar",202,1,255,avatar)
+            cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
+                        
+            set result = cmdPrep.execute
 
-            if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(avatar) and avatar<>"" and NOT isnull(password) and password<>"") then
+            Set cmdPrep = Server.CreateObject("ADODB.Command")
+            cmdPrep.ActiveConnection = connDB
+            cmdPrep.CommandType = 1
+            cmdPrep.Prepared = True
+            cmdPrep.CommandText = "UPDATE [Account] SET password=? WHERE idUser=?"
+            cmdPrep.parameters.Append cmdPrep.createParameter("password",202,1,255,password)
+            cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
+            cmdPrep.execute
+            Session("Success") = "The user was edited!"
+            Response.redirect("L_home.asp")
+        End Function
+        if (NOT isnull(nameUser) and TRIM(nameUser)<> "" and NOT isnull(birthday) and TRIM(birthday)<>"" and NOT isnull(phone) and TRIM(phone)<>"" and NOT isnull(address) and TRIM(address)<>"" and NOT isnull(email) and TRIM(email)<>"" and NOT isnull(password) and TRIM(password)<>"") then
 
-                Set cmdPrep = Server.CreateObject("ADODB.Command")
-                connDB.Open()
-                cmdPrep.ActiveConnection = connDB
-                cmdPrep.CommandType = 1
-                cmdPrep.Prepared = True
-                cmdPrep.CommandText = "UPDATE [User] SET nameUser=?, birthday=?, phone=?, address=?, email=?, avatar = ? WHERE idUser=?"
-                cmdPrep.parameters.Append cmdPrep.createParameter("nameUser",202,1,255,nameUser)
-                cmdPrep.parameters.Append cmdPrep.createParameter("birthday",202,1,255,birthday)
-                cmdPrep.parameters.Append cmdPrep.createParameter("phone",202,1,255,phone)
-                cmdPrep.parameters.Append cmdPrep.createParameter("address",202,1,255,address)
-                cmdPrep.parameters.Append cmdPrep.createParameter("email",202,1,255,email)
-                cmdPrep.parameters.Append cmdPrep.createParameter("avatar",202,1,255,avatar)
-                cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
-                
-                set result = cmdPrep.execute
+            connDB.Open()
+            Set cmdPrep = Server.CreateObject("ADODB.Command")
+            cmdPrep.ActiveConnection = connDB
+            cmdPrep.CommandType = 1
+            cmdPrep.Prepared = True
 
-                Set cmdPrep = Server.CreateObject("ADODB.Command")
-                cmdPrep.ActiveConnection = connDB
-                cmdPrep.CommandType = 1
-                cmdPrep.Prepared = True
-                cmdPrep.CommandText = "UPDATE [Account] SET password=? WHERE idUser=?"
-                cmdPrep.parameters.Append cmdPrep.createParameter("password",202,1,255,password)
-                cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
-                cmdPrep.execute
-                Session("Success") = "The user was edited!"
-                Response.redirect("L_home.asp")
-            else
-                Session("Error") = "You have to input enough info"
-            end if   
-    End if         
+            cmdPrep.CommandText = "select * from [User] where phone = '"&phone&"'"
+            set result = cmdPrep.execute
+            ' Kiểm tra kết quả result
+            ' nếu có tồn tại
+            if not result.EOF then
+                'nếu có tồn tại phone
+                phoneTemp = result("phone")
+                If (Cint(idUser) <> 0) Then
+                    Set cmdPrep = Server.CreateObject("ADODB.Command")
+                    cmdPrep.ActiveConnection = connDB
+                    cmdPrep.CommandType = 1
+                    cmdPrep.Prepared = True
+                    cmdPrep.CommandText = "select [User].*, [password] from [User] inner join [Account] on [User].idUser = [Account].idUser where [User].idUser = '"&idUser&"'"
+                    set result = cmdPrep.execute
+                    If (result("phone") = phoneTemp) Then
+                        ' true -> nếu phone của Employee = phone gửi theo form -> chính là Employee đó đang dùng phone -> update
+                        updateUser()
+                        connDB.Close
+                        '''''
+                        Response.redirect("TH_QL_quanlyNV.asp")
+                    Else
+                        ' false -> ngược lại thì không phải phone của Employee
+                        Session("ErrorTitle") = "Phone is existed!"
+                        connDB.Close
+                    End if
+                End if     
+            End if  
+        else
+            Session("Error") = "You have to input enough info"
+        End if    
+    End if     
 %>
 
 <!DOCTYPE html>
@@ -118,7 +153,16 @@
                         <input type="text" class="header_2" id="password" name="password" value="<%=password%>">
                     </div>
                 </div>
-                <p class="p_error" style="padding: 5px 10px; height: 18px;"></p>
+                <%
+                    If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
+                %>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                <%
+                    Session.Contents.Remove("ErrorTitle")
+                    else
+                %>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 100%; white-space: break-spaces;"></p>                <%
+                    end if
+                %>
                 <div class="controls">
                     <div class="controls_1">
                         <button type="submit" class="btn btn-primary key">Set</button>
@@ -135,6 +179,7 @@
     <!-- bootstrap -->
     <script src="assets/javascript/popper.min.js"></script>
     <script src="assets/javascript/bootstrap.min.js"></script>
+    <script src="./assets/javascript/TH_EditUser.js"></script>
     
     <!-- header js -->
 
