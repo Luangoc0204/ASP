@@ -42,6 +42,7 @@
         email = Request.form("email")
         salary = Request.form("salary")
         position = Request.form("position")
+        
         'tạo một Function để sử dụng lại
         Function updateEmployee()
             ' Do Something...
@@ -67,8 +68,6 @@
             cmdPrep.parameters.Append cmdPrep.createParameter("salary",202,1,255,salary)
             cmdPrep.parameters.Append cmdPrep.createParameter("position",202,1,255,position)
             cmdPrep.execute
-            Session("Success") = "Edit Employee Successfully!"
-            Response.redirect("TH_QL_quanlyNV.asp")
         End Function
         if (NOT isnull(nameUser) and nameUser <> "" and NOT isnull(birthday) and birthday<>"" and NOT isnull(phone) and phone<>"" and NOT isnull(address) and address<>"" and NOT isnull(email) and email<>"" and NOT isnull(salary) and salary<>"" and NOT isnull(position) and position<>"") then
             connDB.Open()
@@ -107,8 +106,8 @@
                 End if
                 
             else
-                'transaction
-                
+                On Error resume next   
+                connDB.BeginTrans ' Bắt đầu Transaction          
                 if (cint(idEmployee) = 0) then
             
                     'nếu không có idEmployee -> thực hiện Add Employee
@@ -149,12 +148,32 @@
                     cmdPrep.parameters.Append cmdPrep.createParameter("username",202,1,255,phone)
                     cmdPrep.parameters.Append cmdPrep.createParameter("password",202,1,255,password2)
                     cmdPrep.execute
-                    Session("idUser") = newId
-                    Session("Success") = "Add employee successfully"
-                    Response.redirect("TH_QL_quanlyNV.asp")
+                    If Err.Number = 0 Then  
+                        '*** Commit Transaction ***'  
+                        connDB.CommitTrans
+                        Session("Success") = "Edit Employee Successfully!"
+                        Response.redirect("TH_QL_quanlyNV.asp")
+                    Else  
+                        '*** Rollback Transaction ***' 
+                        connDB.RollbackTrans  
+                        Session("Error") = "Edit Employee Failed!"
+                        Session("Error") = "Error Save ("&Err.Description&")"
+                        Response.redirect("./TH_QL_quanlyNV.asp")
+                    End If
                 else          
                     'nếu có idEmployee -> thực hiện Edit
-                    updateEmployee()
+                    updateEmployee()       
+                    If Err.Number = 0 Then  
+                        '*** Commit Transaction ***'  
+                        connDB.CommitTrans
+                        Session("Success") = "Edit Employee Successfully!"
+                        Response.redirect("TH_QL_quanlyNV.asp")
+                    Else  
+                        '*** Rollback Transaction ***' 
+                        connDB.RollbackTrans  
+                        Session("Error") = "Edit Employee Failed!"
+                        Response.redirect("./TH_QL_quanlyNV.asp")
+                    End If
                 end if
             end if
             

@@ -69,6 +69,19 @@
     border: 1px solid var(--main-color);  
     padding: 5px 5px 5px 10px;
 }
+.header_21{
+    outline: none;
+    resize: none;
+    color: var(--main-color);
+    width: 30%;  
+    border: 1px solid var(--main-color);  
+    padding: 5px 5px 5px 10px;
+}
+
+.type_input {
+    display: flex;
+    padding-left: 16%;
+}
 .header_3{
     outline: none;
     resize: none;

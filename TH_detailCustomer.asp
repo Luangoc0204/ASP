@@ -1,6 +1,5 @@
 <%@LANGUAGE="VBSCRIPT" CODEPAGE="65001"%>
 <!--#include file="connect.asp"-->
-
 <%
     'connDB Close
     If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="") Then

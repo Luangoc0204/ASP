@@ -46,7 +46,7 @@
                                     </li>
                                 </ul>
                                 <!-- Add Human -->
-                                <a href="TH_AddTable.asp" class="add-human">
+                                <a href="./TH_AddTable.asp" class="add-human">
                                     <ul class="filters " style="padding: 10px 20px;">
                                     <i class="fa-solid fa-circle-plus" style="color: #ff8243; font-weight: 900;font-size: 44px;padding-right: 5px;"></i>
                                         Add table
@@ -88,18 +88,22 @@
                                 </div>
                                 <div class="dist-bottom-row">
                                     <ul>
-                                        <li href="">
+                                        <a href="TH_AddTable.asp?idTable=<%=result("idTable")%>">
+                                        <li>
                                             <button class="dish-add-btn btn-buy-now">
                                                 <i class="fa-regular fa-pen-to-square fa-lg" style="color: #fff;"></i>
                                                 <span>Edit</span>
                                             </button>
                                         </li>
+                                        </a>
+                                        <a href="L_deleteTable.asp?idTable=<%=result("idTable")%>">
                                         <li>
                                             <button class="dish-add-btn btn-add-to-cart">
                                                 <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>
                                                 <span style="padding-left: 5px;">Delete</span>
                                             </button>
                                         </li>
+                                        </a>
                                     </ul>
                                 </div>
                             </div>

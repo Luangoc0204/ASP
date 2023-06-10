@@ -96,7 +96,7 @@
     <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/T_SetATable.css">
     <link rel="stylesheet" href="./assets/css/L_header.css">
-    <title>Document</title>
+    <title>BookingTable</title>
 </head>
 <body>
     <!-- #include file="header.asp" -->
@@ -116,7 +116,7 @@
                     </div>
                     <div class="header_1">
                         <p class="header_title">Amount:</p>
-                        <input type="text" class="header_2" id="amountBT" name="amountBT" value="<%=amountBT%>">
+                        <input type="number" min="1" class="header_2" id="amountBT" name="amountBT" value="<%=amountBT%>">
                     </div>
                     <div class="header_1">
                         <p class="header_title">Date:</p>
@@ -125,18 +125,39 @@
                     <div class="header_1">
                         <p class="header_title">Time:</p>
                         <p style="display:none" id="timeBT"><%=timeBT%></p>
-                        <input type="time" class="header_2" class="input_timeBT" name="timeBT" value="<%=Left(timeBT,5)%>">
+                        <input type="time" class="header_2" id = "timeBT2" class="input_timeBT" name="timeBT" value="<%=Left(timeBT,5)%>">
                     </div>
                     <div class="header_1">
                         <p class="header_title">Note:</p>
                         <input type="text" class="header_3" id="noteBT" name="noteBT" value="<%=noteBT%>">
                     </div>
-                </div>
-                <p class="p_error" style="padding: 5px 10px; height: 18px;"></p>
+                <%
+                    If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
+                %>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                
+                <%
+                    Session.Contents.Remove("ErrorTitle")
+                    else
+                %>
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 100%; white-space: break-spaces;"></p>                <%
+                    end if
+                %>
                 <div class="controls">
                     <div class="controls_1">
-                        <button type="submit" class="btn btn-primary key">Set</button>
-                        <button type="button" class="btn btn-primary">Cancel</button>
+                <%
+                    ' true
+                    if (cint(idBookingTable) = 0) then
+                %>
+                    <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Add</button>
+                <%    
+                    ' false
+                    Else
+                %>
+                    <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Set</button>
+                <%
+                    End if
+                %>
+                        <a href="L_menu.asp" type="button" class="btn btn-primary key">Cancel</a>
                     </div>
                 </div>
             </div>
@@ -152,6 +173,8 @@
     
     <!-- header js -->
     <script src="./assets/javascript/L_header.js"></script>
+    <script src="./assets/javascript/TH_SetATable.js"></script>
+    
     <!-- Modal js  -->
 </body>
 </html>

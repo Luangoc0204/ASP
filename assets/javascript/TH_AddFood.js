@@ -39,7 +39,7 @@ function checkPrice() {
         btn_submit.disabled = true;
     }
 }
-// kiểm tra person
+// kiểm tra Amount
 function checkAmount(){
     let input_amountfood = document.getElementById('amountFood').value
     const regex = /^[1-9]\d*$|^0$/;

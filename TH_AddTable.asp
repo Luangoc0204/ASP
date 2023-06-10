@@ -34,18 +34,28 @@
         amountTable = Request.form("amountTable")
         imgTable = Request.form("imgTable")
 
+        connDB.Open()  
+        On Error resume next   
+        connDB.BeginTrans ' Bắt đầu Transaction
         if (cint(idTable) = 0) then
             if (NOT isnull(typeTable) and TRIM(typeTable) <> "" and NOT isnull(amountTable) and TRIM(amountTable)<>"" and NOT isnull(imgTable) and TRIM(imgTable)<>"") then
 
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
-                connDB.Open()
                 cmdPrep.ActiveConnection = connDB
                 cmdPrep.CommandType = 1
                 cmdPrep.Prepared = True
-                cmdPrep.CommandText = "INSERT INTO Table (typeTable, amountTable, imgTable) VALUES ('"&typeTable&"','"&amountTable&"','"&imgTable&"')"
+                cmdPrep.CommandText = "INSERT INTO [Table] (typeTable, amountTable, imgTable) VALUES ('"&typeTable&"','"&amountTable&"','"&imgTable&"')"
                 cmdPrep.execute
-                Session("Success") = "New Table added!"
-                Response.redirect("./TH_listTable.asp")
+                If Err.Number = 0 Then  
+                    '*** Commit Transaction ***'  
+                    connDB.CommitTrans
+                    Session("Success") = "New Table added!"
+                    Response.redirect("./TH_listTable.asp")
+                Else  
+                    '*** Rollback Transaction ***'  
+                    connDB.RollbackTrans  
+                    Session("Error") = "Add Table Failed!"
+                End If 
             else
                 Session("Error") = "You have to input enough info"
             end if
@@ -53,14 +63,23 @@
             if (NOT isnull(typeTable) and TRIM(typeTable)<> "" and NOT isnull(amountTable) and TRIM(amountTable)<>"" and NOT isnull(imgTable) and TRIM(imgTable)<>"") then
                 
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
-                connDB.Open()
                 cmdPrep.ActiveConnection = connDB
                 cmdPrep.CommandType = 1
                 cmdPrep.Prepared = True
-                cmdPrep.CommandText = "UPDATE Table SET typeTable= '"&typeTable&"', amountTable= '"&amountTable&"', imgTable= '"&imgTable&"'"
+                cmdPrep.CommandText = "UPDATE [Table] SET typeTable= '"&typeTable&"', amountTable= '"&amountTable&"', imgTable= '"&imgTable&"' WHERE idTable = '"&idTable&"'"
                 cmdPrep.execute
-                Session("Success") = "The Table was edited!"
-                Response.redirect("TH_listTable.asp")
+                If Err.Number = 0 Then  
+                    '*** Commit Transaction ***'  
+                    connDB.CommitTrans
+                    Session("Success") = "The Table was edited!"
+                    Response.redirect("./TH_listTable.asp")
+                Else  
+                    '*** Rollback Transaction ***' 
+                    Response.write("Có lỗi xảy ra") 
+                    connDB.RollbackTrans  
+                    Session("Error") = "Edit Table Failed!"
+                    '  Response.redirect("./TH_listTable.asp")
+                End If 
             else
                 Session("Error") = "You have to input enough info"
             end if   
@@ -101,8 +120,12 @@
                 %>
                 <div class="header__one">
                     <div class="header_1">
-                        <p class="header_title">Type:</p>
-                        <input type="number" min="1" class="header_2" id="typeTable" name="typeTable" value="<%=typeTable%>">
+                        <p class="header_title" style="padding-left: 11%;">Type:</p>
+                        <div class="type_input">
+                            <input type="number" min="1" class="header_21" id="typeTable" name="typeTable" value="<%=typeTable%>">
+                            <p class="header_title"style="padding-left: 5%;">people</p>
+                        </div>
+                        
                     </div>
                     <div class="header_1">
                         <p class="header_title">Amount:</p>

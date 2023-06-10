@@ -82,7 +82,7 @@
     <!-- bootstrap  -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="./assets/css/T_AddFood.css">
-    <title>Document</title>
+    <title>Add Food</title>
 </head>
 <body>
     <!-- #include file="header.asp" -->
