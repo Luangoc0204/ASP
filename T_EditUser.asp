@@ -119,10 +119,15 @@
 </head>
 <body>
 
+    <form action="" method="post">
     <div class="div_container">
-        <form action="" method="post">
+        <div class="dish-box text-center box">
+            <div class="dist-img">
+                <img src="assets/images/dish/1.png" alt="">
+                <input type="file" name="" id="">
+        </div>
+        <div class="human-list">
             <div class="container_0">
-                <h1 class="header_0">Edit User</h1>
                 <div class="header__one">
                     <div class="header_1">
                         <p class="header_title">Name:</p>
@@ -171,6 +176,7 @@
                 </div>
             </div>
         </form>
+        </div>
     </div>
     
     <!-- header ends  -->

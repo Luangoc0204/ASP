@@ -39,6 +39,7 @@
 .header_1 p{
     text-align: justify;
     width: 100px;
+    padding: 10px 0 0 0;
 }
 .header_1{
     border-color: var(--main-color);
