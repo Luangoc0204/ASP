@@ -110,7 +110,7 @@
                                     end if
                                     set result = cmdPrep.execute
                                 %>
-                               <!-- Search Human -->
+                                <!-- Search Human -->
                                 <ul class="filters search-button">
                                     <form method="post" action="TH_listCustomer.asp">
                                         <input type="text" class="search-input" name="nameSearch" value="<%=nameSearch%>" placeholder="Search here ...">
@@ -170,6 +170,7 @@
                                     <%
                                         end if
                                     %>
+                                    
                                 </tbody>
                             </table>   
                     <div style="width: 100%; display: flex; justify-content: center; margin-top: 20px;">

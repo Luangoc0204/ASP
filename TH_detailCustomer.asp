@@ -95,6 +95,7 @@
                                         userTemp.birthday = result("birthday")
                                         userTemp.phone = result("phone")
                                         userTemp.address = result("address")
+                                        userTemp.avatar = result("avatar")
                                         'nếu là Customer
                                         if ( (not isnull(idCustomer) and trim(idCustomer) <> "") or (not isnull(idUser) and trim(idUser)<>"" and Session("role")="CUSTOMER") ) then
                                             set customerTemp = new Customer
@@ -113,7 +114,18 @@
                                 %>
                         <div class="dish-box text-center">
                             <div class="dist-img">
-                                <img src="<%=result("avatar")%>" alt="">
+                                <%
+                                    If (trim(userTemp.avatar)="") Then
+                                    ' true
+                                %>
+                                <img src="upload\user\user.png" alt="">
+                                <%
+                                    else
+                                %>
+                                <img src="upload\user\<%=userTemp.avatar%>" alt="">
+                                <%
+                                    end if
+                                %>
                             </div>
                             <div class="human-title">
                                 <h3 class="h3-title"><%=userTemp.nameUser%></h3>
@@ -168,10 +180,12 @@
                             </div>
                             <div class="dist-bottom-row" style="margin-top: 40px;">
                                 <ul>
-                                    <li>
+                                    <li >
                                         <button class="dish-add-btn btn-buy-now">
-                                            <i class="fa-regular fa-pen-to-square fa-lg" style="color: #fff;"></i>
-                                            <span>Edit</span>
+                                            <a href="T_EditUser.asp?idUser=<%=userTemp.idUser%>" style="text-decoration: none;color: white;">
+                                                <i class="fa-regular fa-pen-to-square fa-lg" style="color: #fff;"></i>
+                                                <span>Edit</span>
+                                            </a>
                                         </button>
                                     </li>
                                     <%
@@ -264,16 +278,46 @@
                                         <td style="width: 9%;min-width: 74px; text-align:center"><%=listBookingTable(i).amountBT%></td>
                                         <td style="width: 31%;min-width: 173px;;" class="note-order"><%=listBookingTable(i).noteBT%></td>
                                         <td style="width: 14%;min-width: 88px; text-align:center">
-                                            <a href="#" class="btn btn-success" style="padding: 5px 10px;">
+                                            <a href="T_SetATable.asp?idBookingTable=<%=listBookingTable(i).idBookingTable%>" class="btn btn-success" style="padding: 5px 10px;">
                                                 <i class="fa-solid fa-pen-to-square"></i>
                                                 Edit
                                             </a>
                                         </td>
                                         <td style="width: 14%;min-width: 88px; text-align:center">
-                                            <a href="#" class="btn btn-outline-success" style="padding: 5px 5px;">
+                                            <%
+                                                if (not isnull(Session("role")) and Session("role") = "ADMIN") then
+                                                
+                                            %>
+                                            <a href="L_purchaseCart.asp?idBookingTable=<%=listBookingTable(i).idBookingTable%>" class="btn btn-outline-success" style="padding: 5px 5px;">
                                                 <i class="fa-sharp fa-regular fa-eye fa-xs"></i>
                                                 View
                                             </a>
+                                            <%
+                                                else
+                                                    set cmdPrep = Server.CreateObject("ADODB.Command")
+                                                    cmdPrep.ActiveConnection = connDB
+                                                    cmdPrep.CommandType = 1
+                                                    cmdPrep.Prepared = True
+                                                    cmdPrep.CommandText = "SELECT * FROM Bill where idBookingTable = ? "
+                                                    cmdPrep.parameters.Append cmdPrep.createParameter("idBookingTable",3,1, ,CInt(idBookingTable))
+                                                    set result = cmdPrep.execute
+                                                    if not result.EOF then
+                                            %>
+                                            <a href="L_BillUser.asp?idBill=<%=result("idBill")%>" class="btn btn-outline-success" style="padding: 5px 5px;">
+                                                <i class="fa-sharp fa-regular fa-eye fa-xs"></i>
+                                                View
+                                            </a>
+                                            <%
+                                                    else
+                                            %>
+                                            <a href="L_purchaseCart.asp?idBookingTable=<%=listBookingTable(i).idBookingTable%>" class="btn btn-outline-success" style="padding: 5px 5px;">
+                                                <i class="fa-sharp fa-regular fa-eye fa-xs"></i>
+                                                View
+                                            </a>
+                                            <%
+                                                    end if
+                                                end if                                                
+                                            %>
                                         </td>
                                     </tr>
                                     <%

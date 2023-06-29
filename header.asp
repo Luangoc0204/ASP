@@ -125,7 +125,17 @@
                                             if not result.EOF then              
                                     %>
                                     <div class="info">
-                                        <img src="<%=result("avatar")%>" alt="">
+                                        <%
+                                            if (trim(result("avatar"))="") then
+                                        %>
+                                        <img src="upload\user\user.png" alt="">
+                                        <%
+                                            else
+                                        %>
+                                        <img src="upload\user\<%=result("avatar")%>" alt="">
+                                        <%
+                                            end if
+                                        %>
                                         <div class="group_name_email">
 
                                             <p class="name_User"><%=result("nameUser")%></p>

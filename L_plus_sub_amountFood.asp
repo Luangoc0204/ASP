@@ -22,7 +22,7 @@
         Response.write("Update idBookingFood " + CStr(id) + " successfully")
     end if    
     cmdPrep.parameters.Append cmdPrep.createParameter("amountCF",3,1, ,amount)
-    cmdPrep.parameters.Append cmdPrep.createParameter("idCartFood",3,1, ,id)
+    cmdPrep.parameters.Append cmdPrep.createParameter("idCF_idBF",3,1, ,id)
     cmdPrep.execute
     connDB.Close
 %>

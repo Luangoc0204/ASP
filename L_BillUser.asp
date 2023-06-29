@@ -72,11 +72,11 @@
                 cmdPrep.CommandType = 1
                 cmdPrep.Prepared = True
                 if (idCart = 0) then
-                cmdPrep.CommandText = "SELECT * from [User] where idUser = (select idUser from BookingTable where idBookingTable = ?) "
-                cmdPrep.parameters.Append cmdPrep.createParameter("idBookingTable",3,1, ,CInt(idBookingTable))
+                    cmdPrep.CommandText = "SELECT * from [User] where idUser = (select idUser from BookingTable where idBookingTable = ?) "
+                    cmdPrep.parameters.Append cmdPrep.createParameter("idBookingTable",3,1, ,CInt(idBookingTable))
                 else 
-                cmdPrep.CommandText = "SELECT * from [User] where idUser = (select idUser from Cart where idCart = ?) "
-                cmdPrep.parameters.Append cmdPrep.createParameter("idCart",3,1, ,CInt(idCart))
+                    cmdPrep.CommandText = "SELECT * from [User] where idUser = (select idUser from Cart where idCart = ?) "
+                    cmdPrep.parameters.Append cmdPrep.createParameter("idCart",3,1, ,CInt(idCart))
                 end if
                 set result = cmdPrep.execute
             %>
@@ -123,12 +123,27 @@
                     <td style="width:50px"><%=i%></td>
                     <td width:100px><%=result("typeFood")%></td>
                     <td><%=result("nameFood")%></td>
+                    <%
+                        if (idBookingTable = 0) then
+                    %>
                     <td style="width:100px"><%=result("priceCF")%><span>$</span></td>
                     <td style="width:100px"><%=result("amountCF")%></td>
                     <td style="width:100px">
                         <span class="index-sumPrice"><%=CDbl(result("priceCF") * result("amountCF"))%></span>
                         <span>$</span>
                     </td>
+                    <%
+                        else
+                    %>
+                    <td style="width:100px"><%=result("priceBF")%><span>$</span></td>
+                    <td style="width:100px"><%=result("amountBF")%></td>
+                    <td style="width:100px">
+                        <span class="index-sumPrice"><%=CDbl(result("priceBF") * result("amountBF"))%></span>
+                        <span>$</span>
+                    </td>
+                    <%
+                        end if
+                    %>
                 </tr>
                 <%
                     i = i +1

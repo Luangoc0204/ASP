@@ -244,9 +244,10 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .btn-purchase{
     margin-top: 20px;
-    
+    display: flex;
+    justify-content: center;
 }
-.btn-purchase button {
+.btn-purchase button, .btn-showBill {
     border: 1px solid var(--main-color);
     transition: 0.9s;
     background-size: 200% auto;
@@ -258,10 +259,17 @@ input[type="number"]::-webkit-outer-spin-button {
     text-align: center;
     padding: 5px;
 }
-
 .btn-purchase button:hover {
     background-position: right center;
     cursor: pointer;
+}
+.btn-purchase button, .btn-showBill h2{
+    padding: 5px 0;
+    margin: 0;
+}
+.disable-btn-input{
+    opacity: 0.5;
+    pointer-events: none;
 }
 /* LOADING */
 #loading{

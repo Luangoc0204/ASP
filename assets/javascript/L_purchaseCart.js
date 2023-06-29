@@ -1,4 +1,9 @@
-//lấy numCart
+//lấy numCart & numBookingFood
+let idBookingTable = '';
+if (document.querySelector('.idBookingTable') != null) {
+    idBookingTable = document.querySelector('.idBookingTable').innerText;
+}
+console.log('idBookingTable: ' + idBookingTable);
 function getNumItem() {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
@@ -9,7 +14,17 @@ function getNumItem() {
             cartNumber.innerText = numCart;
         }
     };
-    xmlhttp.open('GET', 'L_getNumCart.asp', true);
+    if (idBookingTable.trim() == '') {
+        xmlhttp.open('GET', 'L_getNumCart.asp', true);
+        // console.log("nhảy vào numCart rồi")
+    } else {
+        xmlhttp.open(
+            'GET',
+            'L_getNumBookingFood.asp?idBookingTable=' + idBookingTable,
+            true
+        );
+        // console.log("nhảy vào idBookingTable")
+    }
     xmlhttp.send();
 }
 getNumItem();
@@ -17,91 +32,169 @@ getNumItem();
 const products = document.querySelectorAll('.content-cart');
 
 // Duyệt qua từng sản phẩm
-products.forEach((product) => {
-    // Lấy các phần tử HTML cần thiết của sản phẩm
-    const amountInput = product.querySelector('.amount-product-cart');
-    const subButton = product.querySelector('.sub-amount');
-    const plusButton = product.querySelector('.plus-amount');
-    const priceElement = product.querySelector('.price-index-product');
-    const sumPriceElement = product.querySelector('.sumPrice-index-product');
-    const idCartFood = product.querySelector('.idCartFood').innerText;
-    const idFood = product.querySelector('.idFood').innerText;
-    const soldOutText = product.querySelector('.sold-out-text');
-    const remainingText = product.querySelector('.remaining-text');
-    //gán sumPrice
-    sumPriceElement.innerText = parseFloat(
-        parseFloat(priceElement.innerText) * amountInput.value
-    ).toFixed(2);
-    //kiểm tra sold out
-    let remainingAmount;
-    //hàm show số sản phẩm còn lại
-    function checkRemaining() {
-        checkSoldOut(idFood, function (sumAmount) {
-            console.log('sumAmount idFood ' + idFood + ' :' + sumAmount);
-            // thực hiện các hành động tiếp theo với giá trị sumAmount
-            remainingAmount = sumAmount;
-            if (sumAmount <= 0) {
-                product.classList.add('sold-out-today');
-                soldOutText.innerText = 'Sold Out Today';
-            } else if (
-                (remainingAmount - parseInt(amountInput.value) <= 10) &
-                (remainingAmount - parseInt(amountInput.value) >= 0)
-            ) {
-                product.classList.remove('sold-out-today');
-                soldOutText.innerText = '';
-                remainingText.innerHTML =
-                    'Remaining Food: <span style="color:red">' +
-                    remainingAmount +
-                    '</span>';
-            } else if (remainingAmount - parseInt(amountInput.value) < 0) {
-                remainingText.innerHTML =
-                    'Remaining Food: <span style="color:red">' +
-                    remainingAmount +
-                    '</span>';
-                product.classList.add('sold-out-today');
-                soldOutText.innerText = '';
-            } else {
-                remainingText.innerHTML = '';
-                soldOutText.innerText = '';
-            }
-            //cập nhật sumMoney
-            updateSumMoney();
-            if (idCartFood != 0){
-                updateAmountCF(idCartFood, amountInput.value);
-            }
+function allProductInsertBill() {
+    products.forEach((product) => {
+        // Lấy các phần tử HTML cần thiết của sản phẩm
+        const amountInput = product.querySelector('.amount-product-cart');
+        const subButton = product.querySelector('.sub-amount');
+        const plusButton = product.querySelector('.plus-amount');
+        const priceElement = product.querySelector('.price-index-product');
+        const sumPriceElement = product.querySelector(
+            '.sumPrice-index-product'
+        );
+        let idCartFood, idBookingFood;
+        if (idBookingTable.trim() == '') {
+            idCartFood = product.querySelector('.idCartFood').innerText;
+        } else {
+            idBookingFood = product.querySelector('.idBookingFood').innerText;
+        }
+        const idFood = product.querySelector('.idFood').innerText;
+        const soldOutText = product.querySelector('.sold-out-text');
+        const remainingText = product.querySelector('.remaining-text');
+        //gán sumPrice
+        sumPriceElement.innerText = parseFloat(
+            parseFloat(priceElement.innerText) * amountInput.value
+        ).toFixed(2);
+        //kiểm tra sold out
+        let remainingAmount;
+        //hàm show số sản phẩm còn lại
+        function checkRemaining() {
+            checkSoldOut(idFood, function (sumAmount) {
+                console.log('sumAmount idFood ' + idFood + ' :' + sumAmount);
+                // thực hiện các hành động tiếp theo với giá trị sumAmount
+                remainingAmount = sumAmount;
+                amountInput.setAttribute('max', parseInt(remainingAmount));
+                if (sumAmount <= 0) {
+                    product.classList.add('sold-out-today');
+                    soldOutText.innerText = 'Sold Out Today';
+                } else if (
+                    (remainingAmount - parseInt(amountInput.value) <= 10) &
+                    (remainingAmount - parseInt(amountInput.value) >= 0)
+                ) {
+                    product.classList.remove('sold-out-today');
+                    soldOutText.innerText = '';
+                    remainingText.innerHTML =
+                        'Remaining Food: <span style="color:red">' +
+                        remainingAmount +
+                        '</span>';
+                } else if (remainingAmount - parseInt(amountInput.value) < 0) {
+                    remainingText.innerHTML =
+                        'Remaining Food: <span style="color:red">' +
+                        remainingAmount +
+                        '</span>';
+                    product.classList.add('sold-out-today');
+                    soldOutText.innerText = '';
+                } else {
+                    remainingText.innerHTML = '';
+                    soldOutText.innerText = '';
+                }
+                //cập nhật sumMoney
+                updateSumMoney();
+                if (idBookingTable.trim() == '') {
+                    updateAmount(idCartFood, amountInput.value);
+                } else {
+                    updateAmount(idBookingFood, amountInput.value);
+                }
+            });
+        }
+        checkRemaining();
+        // Lấy giá của sản phẩm và chuyển về kiểu số thực
+        const price = parseFloat(priceElement.innerText).toFixed(2);
+
+        // Xử lý sự kiện khi ấn nút trừ số lượng
+        subButton.addEventListener('click', () => {
+            let amount = parseInt(amountInput.value);
+            amount = amount > 1 ? amount - 1 : 1;
+            amountInput.value = amount;
+            sumPriceElement.innerText = (price * amount).toFixed(2);
+            checkRemaining();
         });
-    }
-    checkRemaining();
-    // Lấy giá của sản phẩm và chuyển về kiểu số thực
-    const price = parseFloat(priceElement.innerText).toFixed(2);
 
-    // Xử lý sự kiện khi ấn nút trừ số lượng
-    subButton.addEventListener('click', () => {
-        let amount = parseInt(amountInput.value);
-        amount = amount > 1 ? amount - 1 : 1;
-        amountInput.value = amount;
-        sumPriceElement.innerText = (price * amount).toFixed(2);
-        checkRemaining();
-    });
+        // Xử lý sự kiện khi ấn nút thêm số lượng
+        plusButton.addEventListener('click', () => {
+            let amount = parseInt(amountInput.value);
+            amount = amount + 1;
+            if (amount > parseInt(remainingAmount)) {
+                //not doing anything
+            } else {
+                amountInput.value = amount;
+                sumPriceElement.innerText = (price * amount).toFixed(2);
+            }
+            checkRemaining();
+        });
 
-    // Xử lý sự kiện khi ấn nút thêm số lượng
-    plusButton.addEventListener('click', () => {
-        let amount = parseInt(amountInput.value);
-        amount = amount + 1;
-        amountInput.value = amount;
-        sumPriceElement.innerText = (price * amount).toFixed(2);
-        checkRemaining();
+        // Xử lý sự kiện khi người dùng thay đổi số lượng
+        amountInput.addEventListener('change', () => {
+            let amount = parseInt(amountInput.value);
+            amount = amount < 1 ? 1 : amount;
+            amountInput.value = amount;
+            sumPriceElement.innerText = (price * amount).toFixed(2);
+            checkRemaining();
+        });
     });
+}
+function allProductUpdateBill() {
+    products.forEach((product) => {
+        const amountInput = product.querySelector('.amount-product-cart');
+        const subButton = product.querySelector('.sub-amount');
+        const plusButton = product.querySelector('.plus-amount');
+        const priceElement = product.querySelector('.price-index-product');
+        const sumPriceElement = product.querySelector(
+            '.sumPrice-index-product'
+        );
+        const idBookingFood = product.querySelector('.idBookingFood').innerText;
+        const idFood = product.querySelector('.idFood').innerText;
+        const soldOutText = product.querySelector('.sold-out-text');
+        const remainingText = product.querySelector('.remaining-text');
+        soldOutText.innerText = '';
+        remainingText.innerText = '';
+        //gán sumPrice
+        sumPriceElement.innerText = parseFloat(
+            parseFloat(priceElement.innerText) * amountInput.value
+        ).toFixed(2);
+        amountInput.removeAttribute('max');
+        // Lấy giá của sản phẩm và chuyển về kiểu số thực
+        const price = parseFloat(priceElement.innerText).toFixed(2);
 
-    // Xử lý sự kiện khi người dùng thay đổi số lượng
-    amountInput.addEventListener('change', () => {
-        let amount = parseInt(amountInput.value);
-        amount = amount < 1 ? 1 : amount;
-        amountInput.value = amount;
-        sumPriceElement.innerText = (price * amount).toFixed(2);
-        checkRemaining();
+        // Xử lý sự kiện khi ấn nút trừ số lượng
+        subButton.addEventListener('click', () => {
+            let amount = parseInt(amountInput.value);
+            amount = amount > 1 ? amount - 1 : 1;
+            amountInput.value = amount;
+            sumPriceElement.innerText = (price * amount).toFixed(2);
+            updateAmount(idBookingFood, amountInput.value);
+            updateSumMoney()
+        });
+
+        // Xử lý sự kiện khi ấn nút thêm số lượng
+        plusButton.addEventListener('click', () => {
+            let amount = parseInt(amountInput.value);
+            amount = amount + 1;
+            amountInput.value = amount;
+            sumPriceElement.innerText = (price * amount).toFixed(2);
+            updateAmount(idBookingFood, amountInput.value);
+            updateSumMoney()
+        });
+
+        // Xử lý sự kiện khi người dùng thay đổi số lượng
+        amountInput.addEventListener('change', () => {
+            let amount = parseInt(amountInput.value);
+            amount = amount < 1 ? 1 : amount;
+            amountInput.value = amount;
+            sumPriceElement.innerText = (price * amount).toFixed(2);
+            updateAmount(idBookingFood, amountInput.value);
+            updateSumMoney()
+        });
     });
-});
+}
+//update lại Purchase
+let btnPurchase_idBill;
+if (document.querySelector('button[data-idBill]') != null){
+    btnPurchase_idBill = document.querySelector('button[data-idBill]');
+    allProductUpdateBill()
+} else{
+    allProductInsertBill()
+}
 ///thay đổi sumMoney
 // Tìm tất cả sản phẩm không bị sold-out-today
 function updateSumMoney() {
@@ -152,8 +245,8 @@ function updateSumMoney() {
     document.querySelector('.total-price').innerText = totalPrice;
 }
 updateSumMoney();
-//hàm update amountCF
-function updateAmountCF(idCartFood, amountCF) {
+//hàm update amount
+function updateAmount(idCF_BF, amount) {
     let xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
@@ -167,10 +260,15 @@ function updateAmountCF(idCartFood, amountCF) {
     );
     let data =
         'id=' +
-        encodeURIComponent(idCartFood) +
+        encodeURIComponent(idCF_BF) +
         '&amount=' +
-        encodeURIComponent(amountCF) +
-        '&file=CF';
+        encodeURIComponent(amount);
+    if (idBookingTable.trim() == '') {
+        data += '&file=CF';
+    } else {
+        data += '&file=BF';
+    }
+
     xmlhttp.send(data);
 }
 //hàm kiểm tra Sold out
@@ -259,6 +357,17 @@ let listIdCartFood = [];
 const btnPurchase = document.getElementById('button-purchase');
 const modalPurchase = document.getElementById('confirm-purchase');
 const loading = document.getElementById('loading');
+let listProductSoldOutId = [];
+let products_SoldOut = document.querySelectorAll('.content-cart .sold-out-today')
+
+// lấy id của các BookingFood SoldOut để xóa đi
+products_SoldOut.forEach((product) => {
+    let idBookingFood;
+    if (idBookingTable.trim() == '') {
+        idCartFood = product.querySelector('.idCartFood').innerText;
+    }
+    listProductSoldOutId.push(idBookingFood);
+});
 function checkRemainingAgain() {
     loading.style.display = 'flex';
     let products_notSoldOut = document.querySelectorAll(
@@ -266,10 +375,15 @@ function checkRemainingAgain() {
     );
     let nameFoodSoldOut = document.querySelector('.nameFood-soldOut-last');
     let listProductSoldOut = [];
-    let idFoodBuyNow = 0
-    let amountFoodBuyNow = 1
+    let idFoodBuyNow = 0;
+    let amountFoodBuyNow = 1;
     products_notSoldOut.forEach((product) => {
-        const idCartFood = product.querySelector('.idCartFood').innerText;
+        let idCartFood, idBookingFood;
+        if (idBookingTable.trim() == '') {
+            idCartFood = product.querySelector('.idCartFood').innerText;
+        } else {
+            idBookingFood = product.querySelector('.idBookingFood').innerText;
+        }
         const idFood = product.querySelector('.idFood').innerText;
         const nameFood = product.querySelector('.name-food').innerText;
         const amountInput = product.querySelector('.amount-product-cart');
@@ -278,18 +392,25 @@ function checkRemainingAgain() {
             // thực hiện các hành động tiếp theo với giá trị sumAmount
             if (sumAmount <= 0 || sumAmount - parseInt(amountInput.value) < 0) {
                 listProductSoldOut.push(nameFood);
+                if (idBookingTable.trim() != '') {
+                    listProductSoldOutId.push(idBookingFood);
+                }
                 product.classList.add('sold-out-today');
                 updateSumMoney();
-                updateAmountCF(idCartFood, amountInput.value);
+                if (idBookingTable.trim() == '') {
+                    updateAmount(idCartFood, amountInput.value);
+                } else {
+                    updateAmount(idBookingFood, amountInput.value);
+                }
             } else {
-                if (idCartFood == 0) {
+                if (idCartFood == 0 && idBookingTable.trim() == '') {
                     console.log('idFood: ' + idFood);
                     console.log('amountInput: ' + amountInput.value);
-                    idFoodBuyNow = idFood
+                    idFoodBuyNow = idFood;
                     console.log('idFoodBuyNow: ' + idFoodBuyNow);
-                    amountFoodBuyNow = amountInput.value
+                    amountFoodBuyNow = amountInput.value;
                     console.log('amountFoodBuyNow: ' + amountFoodBuyNow);
-                } else{
+                } else if (idCartFood != 0) {
                     listIdCartFood.push(idCartFood);
                 }
             }
@@ -300,10 +421,18 @@ function checkRemainingAgain() {
         if (listProductSoldOut.length === 0) {
             ///lưu thông tin -> hiện loadding -> chuyển sang bill
             console.log('listProductSoldOut: ' + listProductSoldOut);
-            purchaseCart(listIdCartFood, idFoodBuyNow, amountFoodBuyNow);
+            if (idBookingTable.trim() == '') {
+                purchaseCart(listIdCartFood, idFoodBuyNow, amountFoodBuyNow);
+            } else {
+                purchaseBookingTable(listProductSoldOutId);
+            }
         } else {
             loading.style.display = 'none';
             nameFoodSoldOut.innerText = listProductSoldOut.join(', ');
+            if (idBookingTable.trim() != '') {
+                document.querySelector('.notice-delete-text').style.display =
+                    'block';
+            }
             // toastPurchase.classList.add('show.bs.modal');
             const myModal = new bootstrap.Modal(modalPurchase, {
                 keyboard: false,
@@ -316,7 +445,15 @@ function checkRemainingAgain() {
                 .addEventListener('click', () => {
                     myModal.hide();
                     loading.style.display = 'flex';
-                    purchaseCart(listIdCartFood, idFoodBuyNow, amountFoodBuyNow);
+                    if (idBookingTable.trim() == '') {
+                        purchaseCart(
+                            listIdCartFood,
+                            idFoodBuyNow,
+                            amountFoodBuyNow
+                        );
+                    } else {
+                        purchaseBookingTable(listProductSoldOutId);
+                    }
                 });
         }
     }, 2000);
@@ -326,13 +463,22 @@ btnPurchase.addEventListener('click', () => {
     let totalPrice = parseFloat(
         document.querySelector('.total-price').innerText
     ).toFixed(2);
-    if (totalPrice == 0){
-        showIsEmptyCart()
+    if (totalPrice == 0) {
+        showIsEmptyCart();
     } else {
-
-        checkRemainingAgain();
+        if (document.querySelector('button#button-purchase[data-id-bill]') == null){
+            checkRemainingAgain();
+        } else {
+            const idBill = document.querySelector(
+                'button#button-purchase[data-id-bill]'
+            ).dataset.idBill
+            console.log("idBill: " + idBill)
+            updatePurchaseBookingTable(idBill)
+        }
     }
 });
+
+
 //hàm kiểm tra xem có sản phẩm nào trong giỏ hàng không
 function showIsEmptyCart() {
     let nameFoodSoldOut = document.querySelector('.purchase-modal-body');
@@ -355,9 +501,9 @@ function showIsEmptyCart() {
 }
 //2)hàm chuyển dữ liệu idCart và sumMoney sang file khác
 function purchaseCart(arrIdCartFood, idFoodBuyNow, amountFoodBuyNow) {
-    console.log("idFoodBuyNow: " + idFoodBuyNow)
-    console.log("amountFoodBuyNow: " + amountFoodBuyNow)
-    let idCart = document.querySelector('.idCart').innerText
+    console.log('idFoodBuyNow: ' + idFoodBuyNow);
+    console.log('amountFoodBuyNow: ' + amountFoodBuyNow);
+    let idCart = document.querySelector('.idCart').innerText;
     let discount_user = parseFloat(
         document.querySelector('.discount-user').innerText
     ).toFixed(2);
@@ -376,13 +522,15 @@ function purchaseCart(arrIdCartFood, idFoodBuyNow, amountFoodBuyNow) {
     xmlhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             console.log(this.responseText);
-            var idBill = this.responseText; 
+            var idBill = this.responseText;
             var url = 'L_BillUser.asp?idBill=' + idBill;
             window.location.replace(url);
         }
     };
-    if (idFoodBuyNow == 0){
-        xmlhttp.open('GET', 'L_addBill.asp?arrIdCartFood=' +
+    if (idFoodBuyNow == 0) {
+        xmlhttp.open(
+            'GET',
+            'L_addBill.asp?arrIdCartFood=' +
                 arrIdCartFood +
                 '&discountUser=' +
                 discount_user.toString() +
@@ -390,8 +538,11 @@ function purchaseCart(arrIdCartFood, idFoodBuyNow, amountFoodBuyNow) {
                 discount_giftCode.toString() +
                 '&totalPrice=' +
                 totalPrice.toString() +
-                '&idCart=' + idCart, true);
-    } else{
+                '&idCart=' +
+                idCart,
+            true
+        );
+    } else {
         xmlhttp.open(
             'GET',
             'L_addBill.asp?idFoodBuyNow=' +
@@ -409,5 +560,82 @@ function purchaseCart(arrIdCartFood, idFoodBuyNow, amountFoodBuyNow) {
             true
         );
     }
+    xmlhttp.send();
+}
+function purchaseBookingTable(arrIdBookingFood) {
+    let xmlhttp = new XMLHttpRequest();
+    let discount_user = parseFloat(
+        document.querySelector('.discount-user').innerText
+    ).toFixed(2);
+    let discount_giftCode = parseFloat(
+        document.querySelector('.discount-giftCode').innerText
+    ).toFixed(2);
+    let totalPrice = parseFloat(
+        document.querySelector('.total-price').innerText
+    ).toFixed(2);
+    let arrMoney = [];
+    arrMoney.push(discount_user);
+    arrMoney.push(discount_giftCode);
+    arrMoney.push(totalPrice);
+    console.log('arrMoney BookingTable: ' + arrMoney);
+    xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            var idBill = this.responseText;
+            var url = 'L_BillUser.asp?idBill=' + idBill;
+            window.location.replace(url);
+        }
+    };
+    xmlhttp.open(
+        'GET',
+        'L_addBill.asp?idBookingTable=' +
+            encodeURIComponent(idBookingTable) +
+            '&discountUser=' +
+            discount_user.toString() +
+            '&discountGF=' +
+            discount_giftCode.toString() +
+            '&totalPrice=' +
+            totalPrice.toString() +
+            '&arrIdBookingFood=' +
+            arrIdBookingFood,
+        true
+    );
+    xmlhttp.send();
+}
+function updatePurchaseBookingTable(idBill) {
+    let xmlhttp = new XMLHttpRequest();
+    let discount_user = parseFloat(
+        document.querySelector('.discount-user').innerText
+    ).toFixed(2);
+    let discount_giftCode = parseFloat(
+        document.querySelector('.discount-giftCode').innerText
+    ).toFixed(2);
+    let totalPrice = parseFloat(
+        document.querySelector('.total-price').innerText
+    ).toFixed(2);
+    let arrMoney = [];
+    arrMoney.push(discount_user);
+    arrMoney.push(discount_giftCode);
+    arrMoney.push(totalPrice);
+    console.log('arrMoney BookingTable: ' + arrMoney);
+    xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            var url = 'L_BillUser.asp?idBill=' + idBill;
+            window.location.replace(url);
+        }
+    };
+    xmlhttp.open(
+        'GET',
+        'L_updateBill.asp?idBill=' +
+            encodeURIComponent(idBill) +
+            '&discountUser=' +
+            discount_user.toString() +
+            '&discountGF=' +
+            discount_giftCode.toString() +
+            '&totalPrice=' +
+            totalPrice.toString(),
+        true
+    );
     xmlhttp.send();
 }

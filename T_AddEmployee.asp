@@ -111,7 +111,6 @@
                 'transaction
                 
                 if (cint(idEmployee) = 0) then
-            
                     'nếu không có idEmployee -> thực hiện Add Employee
                     Dim formattedPass
                     formattedPass = FormatDateTime(birthday, 2)
@@ -151,12 +150,14 @@
                     cmdPrep.parameters.Append cmdPrep.createParameter("username",202,1,255,phone)
                     cmdPrep.parameters.Append cmdPrep.createParameter("password",202,1,255,password2)
                     cmdPrep.execute
-                    Session("idUser") = newId
                     Session("Success") = "Add employee successfully"
                     Response.redirect("TH_QL_quanlyNV.asp")
+                    
                 else          
-                    'nếu có idEmployee -> thực hiện Edit
+                    
                     updateEmployee()
+                    Session("Success") = "Edit employee successfully"
+                    Response.redirect("TH_QL_quanlyNV.asp")
                 end if
             end if
             

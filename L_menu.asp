@@ -1,5 +1,6 @@
 <%@LANGUAGE="VBSCRIPT" CODEPAGE="65001"%>
 <!--#include file="connect.asp"-->
+<!--#include file="./models/food.asp" -->
 <%
     'connDB.Close
     If (isnull(Session("idUser")) or trim(Session("idUser")) = "" ) then
@@ -77,6 +78,20 @@
                     <%
                         end if
                     %>
+                    <%
+                        idBookingTable = Request.QueryString("idBookingTable")
+                        If (not isnull(idBookingTable) and trim(idBookingTable) <> "") then
+                    %>
+                    <span id="idBookingTable" style="display:none"><%=idBookingTable%></span>
+                    <a href="L_purchaseCart.asp?idBookingTable=<%=idBookingTable%>" class="div_add_food">
+                        <div class="div_color_add_food" style="justify-content: center;">
+                            <img src="./assets/images/icon_back_fill.png" alt="">
+                            <span style="font-size: 20px;">Return</span>
+                        </div>
+                    </a>
+                    <%
+                        end if
+                    %>
                 </div>
                 <div class="menu-list-row">
                     <div class="row g-xxl-5 bydefault_show" id="menu-dish">
@@ -88,32 +103,50 @@
                         cmdPrep.Prepared = True
                         cmdPrep.CommandText = "SELECT * FROM Food where isActive = 1"
                         set result = cmdPrep.execute
+                        Set listFood = Server.CreateObject("Scripting.Dictionary")
+                        count  = 0
                         do while not result.EOF
+                            set foodTemp = new Food
+                            foodTemp.idFood = result("idFood")
+                            foodTemp.nameFood = result("nameFood")
+                            foodTemp.priceFood = result("priceFood")
+                            foodTemp.typeFood = result("typeFood")
+                            foodTemp.forPerson = result("forPerson")
+                            foodTemp.amountFood = result("amountFood")
+                            foodTemp.imgFood = result("imgFood")
+                            foodTemp.isActive = result("isActive")
+
+                            listFood.add count, foodTemp
+                            'sau khi thêm vào dictionary thì tăng index
+                            count = count + 1
+                            result.MoveNext
+                        LOOP    
+                        For i = 0 To (count-1) 
                     %>
-                        <div class="col-lg-4 col-sm-6 dish-box-wp <%=Replace(result("typeFood"), " ", "")%>" data-cat="<%=Replace(result("typeFood"), " ", "")%>">
+                        <div class="col-lg-4 col-sm-6 dish-box-wp <%=Replace((listFood(i).typeFood), " ", "")%>" data-cat="<%=Replace(listFood(i).typeFood, " ", "")%>">
                             <div class="dish-box text-center">
                                 <div class="dist-img">
-                                    <img src="<%=result("imgFood")%>" alt="">
+                                    <img src="<%=listFood(i).imgFood%>" alt="">
                                 </div>
                                 <div class="dish-title">
-                                    <h3 class="h3-title"><%=result("nameFood")%></h3>
+                                    <h3 class="h3-title"><%=listFood(i).nameFood%></h3>
                                 </div>
                                 <div>
                                     <p>For
-                                        <span><%=result("typeFood")%></span>
+                                        <span><%=listFood(i).typeFood%></span>
                                     </p>
                                 </div>
                                 <div class="dish-info">
                                     <ul style="padding:0">
                                         <li>
                                             <p>Price</p>
-                                            <b class="price"><%=result("pricefood")%>
+                                            <b class="price"><%=listFood(i).priceFood%>
                                                 <span>$<span>
                                             </b>
                                         </li>
                                         <li>
                                             <p>Person</p>
-                                            <b><%=result("forPerson")%>
+                                            <b><%=listFood(i).forPerson%>
                                                 
                                             </b>
                                         </li>
@@ -122,10 +155,10 @@
                                 <div class="dist-bottom-row">
                                     <ul>
                                     <%
-                                        If (not isnull(Session("role")) and (Session("role") = "ADMIN")) then
+                                        If (not isnull(Session("role")) and (Session("role") = "ADMIN") and isnull(idBookingTable) and trim(idBookingTable) = "") then
                                     %>
                                         <li>
-                                            <a href="T_AddFood.asp?idFood=<%=result("idFood")%>">
+                                            <a href="T_AddFood.asp?idFood=<%=listFood(i).idFood%>">
                                                 <button class="dish-add-btn btn-buy-now">
                                                     <img src="./assets/images/icon_pencil_line.png"
                                                         class="uil uil-plus">
@@ -134,17 +167,29 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <button data-href="L_deleteFood.asp?idFood=<%=result("idFood")%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="dish-add-btn delete-btn">
+                                            <button data-href="L_deleteFood.asp?idFood=<%=listFood(i).idFood%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="dish-add-btn delete-btn">
                                                 <img src="./assets/images/icon_delete_2_line.png"
                                                     class="uil uil-plus">
                                                 <span style="padding-left: 5px;">Delete</span>
                                             </button>
                                         </li>
                                     <%
+                                        Elseif (not isnull(idBookingTable) and trim(idBookingTable) <> "") then
+                                    %>    
+                                        <div style="width: 100%; display: flex; justify-content: center;">
+                                            <li>
+                                                <button data-food-id="<%=listFood(i).idFood%>" data-food-name="<%=listFood(i).nameFood%>" class="dish-add-btn btn-add-to-cart">
+                                                    <img src="./assets/images/icon_cart_add_shopping_icon.png"
+                                                        class="uil uil-plus">
+                                                    <span style="padding-left: 5px;">Add</span>
+                                                </button>
+                                            </li>
+                                        </div>
+                                    <%
                                         Elseif (not isnull(Session("role")) and (Session("role") = "CUSTOMER")) then
                                     %>    
                                         <li>
-                                            <a href="L_purchaseCart.asp?idFood=<%=result("idFood")%>">
+                                            <a href="L_purchaseCart.asp?idFood=<%=listFood(i).idFood%>">
                                                 <button class="dish-add-btn btn-buy-now">
                                                     <img src="./assets/images/icon_cart_ecommerce_fast_moving_icon.png"
                                                         class="uil uil-plus">
@@ -153,7 +198,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <button data-food-id="<%=result("idFood")%>" data-food-name="<%=result("nameFood")%>" class="dish-add-btn btn-add-to-cart">
+                                            <button data-food-id="<%=listFood(i).idFood%>" data-food-name="<%=listFood(i).nameFood%>" class="dish-add-btn btn-add-to-cart">
                                                 <img src="./assets/images/icon_cart_add_shopping_icon.png"
                                                     class="uil uil-plus">
                                                 <span style="padding-left: 5px;">Add</span>
@@ -168,8 +213,7 @@
                         </div>
 
                     <%
-                        result.MoveNext
-                        loop
+                        next
                         connDB.Close
                     %>    
                     </div>
@@ -213,7 +257,10 @@
             <p class="content-notification" style="margin-top: 20px;" >
                 The 
                 <span class="name-product-notification" style="font-weight: bold">sushi</span> 
-                has been added to cart
+                has been 
+                <span class="text-add-to">
+                added to cart
+                </span>
             </p>
         </div>
     </div>
