@@ -126,7 +126,7 @@
                         <div class="col-lg-4 col-sm-6 dish-box-wp <%=Replace((listFood(i).typeFood), " ", "")%>" data-cat="<%=Replace(listFood(i).typeFood, " ", "")%>">
                             <div class="dish-box text-center">
                                 <div class="dist-img">
-                                    <img src="<%=listFood(i).imgFood%>" alt="">
+                                    <img src="upload\menu\<%=listFood(i).imgFood%>" alt="">
                                 </div>
                                 <div class="dish-title">
                                     <h3 class="h3-title"><%=listFood(i).nameFood%></h3>

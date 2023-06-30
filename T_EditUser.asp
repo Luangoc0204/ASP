@@ -171,7 +171,7 @@
                                         ' false
                                     End if
                                 %>
-                                    <input type="file" accept=".jpg, .jpeg. png" name="img" id="img-upload" style="display:none">
+                                    <input type="file" accept=".jpg, .jpeg, .png" name="img" id="img-upload" style="display:none">
                                     <div class="camera-above">
                                         <i class="fa-solid fa-camera"></i>
                                     </div>
