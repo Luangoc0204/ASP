@@ -1,5 +1,10 @@
 <%@LANGUAGE="VBSCRIPT" CODEPAGE="65001"%>
 <!--#include file="connect.asp"-->
+<!--#include file="./models/user.asp" -->
+<!--#include file="./models/employee.asp" -->
+<!--#include file="./models/customer.asp" -->
+<!--#include file="./models/bookingTable.asp" -->
+<!--#include file="./models/table.asp" -->
 <%
     'connDB Close
     If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="" OR (Session("role")<>"ADMIN")) Then
@@ -109,10 +114,35 @@
                                         cmdPrep.parameters.Append cmdPrep.createParameter("nameSearch",202,1,255,nameSearch)
                                     end if
                                     set result = cmdPrep.execute
+                                    if not result.EOF Then
+                                        Set listUser = Server.CreateObject("Scripting.Dictionary")
+                                        Set listCustomer = Server.CreateObject("Scripting.Dictionary")
+                                        count = 0
+                                        do while not result.EOF
+                                            set userTemp = new User
+                                            userTemp.idUser = result("idUser")
+                                            userTemp.nameUser = result("nameUser")
+                                            userTemp.email = result("email")
+                                            userTemp.birthday = result("birthday")
+                                            userTemp.phone = result("phone")
+                                            userTemp.address = result("address")
+
+                                            listUser.add count, userTemp
+
+                                            set customerTemp = new Customer
+                                            customerTemp.idCustomer = result("idCustomer")
+                                            customerTemp.idUser = result("idUser")
+                                            customerTemp.amountBooking = result("amountBooking")
+                                            customerTemp.discount = result("discount")
+
+                                            listCustomer.add count, customerTemp
+                                            count = count + 1
+                                        result.MoveNext
+                                        LOOP 
                                 %>
                                 <!-- Search Human -->
                                 <ul class="filters search-button">
-                                    <form method="post" action="TH_listCustomer.asp">
+                                    <form method="post" action="" style="display:flex">
                                         <input type="text" class="search-input" name="nameSearch" value="<%=nameSearch%>" placeholder="Search here ...">
                                         <button type="submit" class="search-icon">
                                             <i class="fa fa-search"></i>
@@ -141,34 +171,29 @@
                                 </thead>
                                 <tbody>
                                     <%
-                                        Dim i
-                                        i = 1
-                                        if not result.EOF Then
-                                        do while not result.EOF
+                                        For i = 0 To (count-1)
                                     %>
                                     <tr>
-                                        <td style="min-width: 50px;width: 4%;"><%=i%></td>
-                                        <td style="min-width: 200px;width: 18%;"><%=result("nameUser")%></td>
-                                        <td style="min-width: 150px; width: 13%;"><%=result("birthday")%></td>
-                                        <td style="min-width: 150px; width: 13%;"><%=result("phone")%></td>
-                                        <td style="min-width: 250px; width: 22%;;" class="note-order"><%=result("email")%></td>
-                                        <td style="min-width: 250px; width: 22%;" class="name-order"><%=result("address")%></td>
+                                        <td style="min-width: 50px;width: 4%;"><%=(i+1)%></td>
+                                        <td style="min-width: 200px;width: 18%;"><%=listUser(i).nameUser%></td>
+                                        <td style="min-width: 150px; width: 13%;"><%=listUser(i).birthday%></td>
+                                        <td style="min-width: 150px; width: 13%;"><%=listUser(i).phone%></td>
+                                        <td style="min-width: 250px; width: 22%;;" class="note-order"><%=listUser(i).email%></td>
+                                        <td style="min-width: 250px; width: 22%;" class="name-order"><%=listUser(i).address%></td>
                                         <td style="min-width: 150px; width: 13%;">
-                                            <a href="TH_detailCustomer.asp?idCustomer=<%=result("idCustomer")%>" class="btn btn-outline-success" style="padding: 5px 10px;">
+                                            <a href="TH_detailCustomer.asp?idCustomer=<%=listCustomer(i).idCustomer%>" class="btn btn-outline-success" style="padding: 5px 10px;">
                                                 <i class="fa-sharp fa-regular fa-eye fa-xs"></i>
                                                 View
                                             </a>
                                         </td>
                                     </tr>
                                     <%
-                                        i = i + 1
-                                        result.MoveNext
-                                        LOOP
-                                        else
+                                        next
+                                    else
                                     %>
-                                            <p>No matching results!</p>
+                                            <p>No customer!</p>
                                     <%
-                                        end if
+                                    end if
                                     %>
                                     
                                 </tbody>

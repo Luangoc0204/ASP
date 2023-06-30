@@ -48,20 +48,21 @@ function checkEmail() {
         btn_submit.disabled = true;
     }
 }
-//kiểm tra salary
-function checkSalary() {
-    let input_salary = document.getElementById('salary').value;
-    const regex = /^\d+(\.\d{1,2})?$/;
-    if (input_salary > 0 && regex.test(input_salary)) {
+// kiểm tra password
+function checkPassword() {
+    let input_password = document.getElementById('password').value;
+    const regex = /^[^\s]+$/;
+    if (regex.test(input_password)) {
         title_error.innerText = '';
         btn_submit.disabled = false;
     } else {
-        title_error.innerText =
-            'You must enter the correct format greater than 0! (eg 500.50)';
+        title_error.innerText = 'Password must not contain spaces';
         btn_submit.disabled = true;
     }
 }
+
+// thực thi function
 document.getElementById('nameUser').addEventListener('change', checkName);
 document.getElementById('phone').addEventListener('change', checkPhone);
-document.getElementById('salary').addEventListener('change', checkSalary);
 document.getElementById('email').addEventListener('change', checkEmail);
+document.getElementById('password').addEventListener('change', checkPassword);

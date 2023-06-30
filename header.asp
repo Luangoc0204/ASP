@@ -38,9 +38,7 @@
                                     end if
                                 %>
                                 <li><a href="L_menu.asp">Menu</a></li>
-                                <%
-                                    If (not isnull(Session("role")) and (Session("role") = "ADMIN" OR Session("role") = "EMPLOYEE")) then
-                                %>
+                            
                                 <li>
                                     <div class="btn-group btn_manager">
                                         <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown"
@@ -57,17 +55,29 @@
                                                     style="width: 100%; border-radius: 0;">Customers</a></li>
                                             <li style="width: 100%; margin: 0;"><a class="dropdown-item" href="T_Restaurant.asp"
                                                     style="width: 100%; border-radius: 0;">Restaurant</a></li>
+                                            <li style="width: 100%; margin: 0;"><a class="dropdown-item" href="TH_listTable.asp"
+                                                    style="width: 100%; border-radius: 0;">Table</a></li>
+                                            <li style="width: 100%; margin: 0;"><a class="dropdown-item" href="TH_listCartBill.asp"
+                                                    style="width: 100%; border-radius: 0;">Bill</a></li>        
                                             <%
-                                                end if
+                                                elseif (not isnull(Session("role")) and Session("role") = "EMPLOYEE") then
                                             %>
                                             <li style="width: 100%; margin: 0;"><a class="dropdown-item" href="TH_listTable.asp"
                                                     style="width: 100%; border-radius: 0;">Table</a></li>
+                                            <li style="width: 100%; margin: 0;"><a class="dropdown-item" href="TH_listCartBill.asp"
+                                                    style="width: 100%; border-radius: 0;">Bill</a></li>        
+                                            <%
+                                                elseif (not isnull(Session("role")) and Session("role") = "CUSTOMER") then
+                                            %>        
+                                            <li style="width: 100%; margin: 0;"><a class="dropdown-item" href="TH_listCartBill.asp"
+                                                    style="width: 100%; border-radius: 0;">Cart Bill</a></li>
+                                            <%
+                                                end if
+                                            %>
                                         </ul>
                                     </div>
                                 </li>
-                                <%
-                                    end if
-                                %>
+                                
                             </ul>
                         </nav>
                         <div class="header-right">

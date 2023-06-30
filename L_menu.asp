@@ -155,7 +155,7 @@
                                 <div class="dist-bottom-row">
                                     <ul>
                                     <%
-                                        If (not isnull(Session("role")) and (Session("role") = "ADMIN") and isnull(idBookingTable) and trim(idBookingTable) = "") then
+                                        If (not isnull(Session("role")) and (Session("role") = "ADMIN") and trim(idBookingTable) = "") then
                                     %>
                                         <li>
                                             <a href="T_AddFood.asp?idFood=<%=listFood(i).idFood%>">

@@ -42,6 +42,11 @@
                 <%
                     idCustomer = Request.QueryString("idCustomer")
                     idUser = Request.QueryString("idUser")
+                    if (trim(idCustomer) = "") then
+                        Session("ReturnBack") = "TH_detailCustomer.asp?idUser="&idUser
+                    else 
+                        Session("ReturnBack") = "TH_detailCustomer.asp?idCustomer="&idCustomer
+                    end if    
                     if ( (not isnull(idCustomer) and trim(idCustomer) <> "") or (not isnull(idUser) and trim(idUser) <> "" and Session("role") = "CUSTOMER") ) then
                 %>
                                 <ul class="filters" style="position: absolute; left: 50%; transform: translateX(-50%);">

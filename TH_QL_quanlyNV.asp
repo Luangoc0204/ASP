@@ -1,5 +1,13 @@
 <%@LANGUAGE="VBSCRIPT" CODEPAGE="65001"%>
 <!--#include file="connect.asp"-->
+<!--#include file="./models/account.asp" -->
+<!--#include file="./models/user.asp" -->
+<!--#include file="./models/employee.asp" -->
+<!--#include file="./models/customer.asp" -->
+<!--#include file="./models/bookingTable.asp" -->
+<!--#include file="./models/bookingFood.asp" -->
+<!--#include file="./models/table.asp" -->
+<!--#include file="./models/food.asp" -->
 <%
     'connDB Close
     If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="" OR (Session("role")<>"ADMIN")) Then
@@ -68,19 +76,44 @@
                                     cmdPrep.Prepared = True
                                     if (isnull(nameSearch) OR trim(nameSearch) = "") then
                                         'tìm tất cả NV
-                                        cmdPrep.CommandText = "SELECT * FROM [User] INNER JOIN [Employee] ON [User].idUser = [Employee].idUser"
+                                        cmdPrep.CommandText = "SELECT [User].*, idEmployee, salary, position FROM [User] INNER JOIN [Employee] ON [User].idUser = [Employee].idUser"
                                     else
                                         'tìm NV theo tên
-                                        cmdPrep.CommandText = "SELECT * FROM [User] INNER JOIN [Employee] ON [User].idUser = [Employee].idUser where [User].nameUser = ?"
+                                        cmdPrep.CommandText = "SELECT [User].*, idEmployee, salary, position FROM [User] INNER JOIN [Employee] ON [User].idUser = [Employee].idUser where [User].nameUser = ?"
                                         cmdPrep.parameters.Append cmdPrep.createParameter("nameSearch",202,1,255,nameSearch)
                                     end if
                                     set result = cmdPrep.execute
+                                    Set listUser = Server.CreateObject("Scripting.Dictionary")
+                                    Set listEmployee = Server.CreateObject("Scripting.Dictionary")
+                                    count = 0
+                                    do while not result.EOF
+                                        set userTemp = new User
+                                        userTemp.idUser = result("idUser")
+                                        userTemp.nameUser = result("nameUser")
+                                        userTemp.email = result("email")
+                                        userTemp.birthday = result("birthday")
+                                        userTemp.phone = result("phone")
+                                        userTemp.address = result("address")
+                                        userTemp.avatar = result("avatar")
+                                        
+                                        listUser.add count, userTemp
+
+                                        set employeeTemp = new Employee
+                                        employeeTemp.idEmployee = result("idEmployee")
+                                        employeeTemp.salary = result("salary")
+                                        employeeTemp.position = result("position") 
+                                        
+                                        listEmployee.add count, employeeTemp
+                                        count = count + 1
+                                    result.MoveNext
+                                    LOOP  
+                                    
                                 %>
                                 <!-- Search Human -->
                                 <ul class="filters search-button">
                                     <!-- Hiển thị kết quả tìm kiếm -->
                                     <form method="post" action="TH_QL_quanlyNV.asp">
-                                        <input type="text" class="search-input" name="nameSearch" value="<%=nameSearch%>" placeholder="Search here ...">
+                                        <input type="text" class="search-input" name="nameSearch" value="<%=nameSearch%>" placeholder="Search by name ...">
                                         <button type="submit" class="search-icon">
                                             <i class="fa fa-search"></i>
                                         </button>
@@ -92,48 +125,47 @@
                 </div>
                 <div class="menu-list-row">
                     <div class="row g-xxl-5 bydefault_show" id="menu-dish">
-                        <!-- 1 -->
-                        <%    
-                            
-                            do while not result.EOF
+                        <%
+                            For i = 0 To (count-1)
                         %>
-                        <div class="col-lg-4 col-sm-6 dish-box-wp <%=Replace(result("position"), " ", "")%>" data-cat="<%=Replace(result("position"), " ", "")%>">
+                        <!-- 1 -->
+                        <div class="col-lg-4 col-sm-6 dish-box-wp <%=Replace(listEmployee(i).position, " ", "")%>" data-cat="<%=Replace(listEmployee(i).position, " ", "")%>">
                             <div class="dish-box text-center">
                                 <div class="dist-img">
-                                    <img src="<%=result("avatar")%>" alt="">
+                                    <img src="upload\user\<%=listUser(i).avatar%>" alt="">
                                 </div>
                                 <div class="human-title">
-                                    <h3 class="h3-title"><%=result("nameUser")%></h3>
+                                    <h3 class="h3-title"><%=listUser(i).nameUser%></h3>
                                 </div>
                                 
                                 <div class="human-list">
                                         <table class="human-info">
                                             <tr>
                                                 <th>Birthday:</th>
-                                                <td><%=result("birthday")%></td>
+                                                <td><%=listUser(i).birthday%></td>
                                             </tr>
                                             <tr>                                                      
                                                 <th>Phone:</th>
-                                                <td><%=result("phone")%></td>
+                                                <td><%=listUser(i).phone%></td>
                                             </tr>
                                             <tr>                                                      
                                                 <th>Address:</th>
-                                                <td><%=result("address")%></td>
+                                                <td><%=listUser(i).address%></td>
                                             </tr>                 
                                             <tr>                                                      
                                                 <th>Position:</th>
-                                                <td><%=result("position")%></td>
+                                                <td><%=listEmployee(i).position%></td>
                                             </tr>
                                             <tr>                                                      
                                                 <th>Salary:</th>
-                                                <td><%=result("salary")%></td>
+                                                <td><%=listEmployee(i).salary%></td>
                                             </tr>
                                 
                                         </table>
                                 </div>
                                 <div class="dist-bottom-row">
                                     <ul>
-                                        <a href="T_AddEmployee.asp?idEmployee=<%=result("idEmployee")%>">
+                                        <a href="T_AddEmployee.asp?idEmployee=<%=listEmployee(i).idEmployee%>">
                                             <li >
                                             <button class="dish-add-btn btn-buy-now">
                                                 <i class="fa-regular fa-pen-to-square fa-lg" style="color: #fff;"></i>
@@ -142,7 +174,7 @@
                                         </li>
                                         </a>
                                         <li>
-                                            <button data-href="L_deleteEmployee.asp?idEmployee=<%=result("idEmployee")%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="dish-add-btn btn-add-to-cart">
+                                            <button data-href="L_deleteEmployee.asp?idEmployee=<%=listEmployee(i).idEmployee%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="dish-add-btn btn-add-to-cart">
                                                 <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>
                                                 <span style="padding-left: 5px;">Delete</span>
                                             </button>
@@ -153,8 +185,7 @@
                         </div>
                         <!-- -->
                         <%
-                            result.MoveNext
-                            LOOP
+                            next
                         %>
                     </div>
                 </div>

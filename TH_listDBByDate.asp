@@ -1,5 +1,13 @@
 <%@LANGUAGE="VBSCRIPT" CODEPAGE="65001"%>
 <!--#include file="connect.asp"-->
+<!--#include file="./models/user.asp" -->
+<!--#include file="./models/employee.asp" -->
+<!--#include file="./models/customer.asp" -->
+<!--#include file="./models/bookingTable.asp" -->
+<!--#include file="./models/bookingFood.asp" -->
+<!--#include file="./models/table.asp" -->
+<!--#include file="./models/food.asp" -->
+<!--#include file="./models/bill.asp" -->
 <%
     'connDB Close
     If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="" OR (Session("role")="CUSTOMER")) Then
@@ -77,6 +85,7 @@
     <!-- header ends  -->
     <!-- Menu begin -->
     <%
+        Session("ReturnBack") = "TH_listDBByDate.asp"
         dateSearch = Request.form("dateSearch")
         if (isnull(dateSearch) OR trim(dateSearch) = "") then
     %>
@@ -162,7 +171,7 @@
                                     cmdPrep.ActiveConnection = connDB
                                     cmdPrep.CommandType = 1
                                     cmdPrep.Prepared = True
-                                    cmdPrep.CommandText = "SELECT * FROM [BookingTable] INNER JOIN [User] ON [BookingTable].idUser =  [User].idUser inner join [Table] on [Table].idTable = BookingTable.idTable"&_
+                                    cmdPrep.CommandText = "SELECT [Table].*, [User].*, idBookingTable, amountBT, dateBT, timeBT, noteBT, isCheckin FROM [BookingTable] INNER JOIN [User] ON [BookingTable].idUser =  [User].idUser inner join [Table] on [Table].idTable = BookingTable.idTable"&_
                                     " where dateBT = CONVERT(date, ?, 103)"&_
                                     " ORDER BY timeBT asc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
                                     
@@ -175,63 +184,86 @@
                                     cmdPrep.parameters.Append cmdPrep.createParameter("offset",3,1, ,offset)
                                     cmdPrep.parameters.Append cmdPrep.createParameter("limit",3,1, , limit)
                                     set result = cmdPrep.execute
-                                    Dim i
-                                    i = 1
+                                    'đặt Object
+                                    Set listBookingTable = Server.CreateObject("Scripting.Dictionary")
+                                    Set listUser = Server.CreateObject("Scripting.Dictionary")
+                                    Set listTable = Server.CreateObject("Scripting.Dictionary")
+
+                                    count = 0
                                     if not result.EOF then
                                         do while not result.EOF
-                                            ' Kiểm tra giá trị của isCheckin và hiển thị nút confirm hoặc icon "success"
-                                            idBookingTable = result("idBookingTable")
+
+                                            set userTemp = new User
+                                            userTemp.idUser = result("idUser")
+                                            userTemp.nameUser = result("nameUser")
+                                            userTemp.email = result("email")
+                                            userTemp.birthday = result("birthday")
+                                            userTemp.phone = result("phone")
+                                            userTemp.address = result("address")
+
+                                            listUser.add count, userTemp
                                             
-                                            Set cmdCheck = Server.CreateObject("ADODB.Command")
-                                            cmdCheck.ActiveConnection = connDB
-                                            cmdCheck.CommandType = 1
-                                            cmdCheck.Prepared = True
-                                            cmdCheck.CommandText = "SELECT isCheckin FROM BookingTable WHERE idBookingTable = ?"
-                                            cmdCheck.parameters.Append cmdCheck.createParameter("nameFood",3,1, ,CInt(idBookingTable))
-                                            Set checkResult = cmdCheck.execute
-                                            isCheckin = checkResult("isCheckin")
+                                            set bookingTableTemp = new BookingTable
+                                            bookingTableTemp.idBookingTable = result("idBookingTable")
+                                            bookingTableTemp.idUser = result("idUser")
+                                            bookingTableTemp.idTable = result("idTable")
+                                            bookingTableTemp.amountBT = result("amountBT")
+                                            bookingTableTemp.dateBT = result("dateBT")
+                                            bookingTableTemp.timeBT = result("timeBT")
+                                            bookingTableTemp.noteBT = result("noteBT")
+                                            bookingTableTemp.isCheckin = result("isCheckin")
+
+                                            listBookingTable.add count, bookingTableTemp
+
+                                            set tableTemp = new Table
+                                            tableTemp.idTable = result("idTable")
+                                            tableTemp.typeTable = result("typeTable")
+                                            tableTemp.amountTable = result("amountTable")
+                                            tableTemp.isActive = result("isActive")
+
+                                            listTable.add count, tableTemp
+
+                                            count = count + 1
+                                        result.MoveNext
+                                        LOOP    
+                                        For i = 0 To (count-1) 
+
                                             
                                             ' Hiển thị thông tin đặt bàn và kiểm tra giá trị của isCheckin để hiển thị nút confirm hoặc icon "success"
                                             %>
                                             <tr>
-                                                <td style="min-width: 50px;width: 4.5%; text-align: center;"><%=i%></td>
-                                                <td style="min-width: 70px;width: 6.5%;" class="timeBT"><%=result("timeBT")%></td>
-                                                <td style="min-width: 80px; width: 7.5%;"><%=result("typeTable")%> People</td>
-                                                <td style="min-width: 80px; width: 7.5%; text-align: center;"><%=result("amountBT")%></td>
-                                                <td style="min-width: 250px; width: 24%;" class="note-order"><%=result("noteBT")%></td>
-                                                <td style="min-width: 150px; width: 14.5%;" class="name-order"><%=result("nameUser")%></td>
-                                                <td style="min-width: 120px; width: 11%;"><%=result("phone")%></td>
+                                                <td style="min-width: 50px;width: 4.5%; text-align: center;"><%=(i+1)%></td>
+                                                <td style="min-width: 70px;width: 6.5%;" class="timeBT"><%=listBookingTable(i).timeBT%></td>
+                                                <td style="min-width: 80px; width: 7.5%;"><%=listTable(i).typeTable%> People</td>
+                                                <td style="min-width: 80px; width: 7.5%; text-align: center;"><%=listBookingTable(i).amountBT%></td>
+                                                <td style="min-width: 250px; width: 24%;" class="note-order"><%=listBookingTable(i).noteBT%></td>
+                                                <td style="min-width: 150px; width: 14.5%;" class="name-order"><%=listUser(i).nameUser%></td>
+                                                <td style="min-width: 120px; width: 11%;"><%=listUser(i).phone%></td>
                                                 <% 
-                                                If isCheckin Then
+                                                If (listBookingTable(i).isCheckin = true) Then
                                                     %>
                                                     <td style="min-width: 60px; width: 5%; text-align: center;">
                                                         <i class="fa-solid fa-circle-check fa-lg" style="color: #09c820;"></i>
                                                     </td>
-                                                    <td style="min-width: 60px; width: 5%; text-align: center;">
-                                                        <a href="#" class="btn btn-outline-success" style="padding: 5px 15px;">Edit</a>
-                                                    </td>
                                                 <% Else %>
                                                     <td style="min-width: 60px;width: 5%; text-align: center;">
-                                                        <a href="TH_confirmBookingTable.asp?idBookingTable=<%=idBookingTable%>" class="btn btn-outline-success" style="padding: 5px 5px;">
+                                                        <a href="TH_confirmBookingTable.asp?idBookingTable=<%=listBookingTable(i).idBookingTable%>" class="btn btn-outline-success" style="padding: 5px 5px;">
                                                             Confirm
                                                         </a>
                                                     </td>
-                                                    <td style="min-width: 60px; width: 5%; text-align: center;">
-                                                        <a href="#" class="btn btn-outline-success" style="padding: 5px 15px;">Edit</a>
-                                                    </td>
                                                 <% End If %>
+                                                    <td style="min-width: 60px; width: 5%; text-align: center;">
+                                                        <a href="T_SetATable.asp?idBookingTable=<%=listBookingTable(i).idBookingTable%>" class="btn btn-outline-success" style="padding: 5px 15px;">Edit</a>
+                                                    </td>
                                                 <td style="min-width: 120px; width: 11%;  text-align: center;">
-                                                    <a href="#" class="btn btn-outline-success" style="padding: 5px 10px;">
+                                                    <a href="L_purchaseCart.asp?idBookingTable=<%=listBookingTable(i).idBookingTable%>" class="btn btn-outline-success" style="padding: 5px 10px;">
                                                         <i class="fa-sharp fa-regular fa-eye fa-xs"></i>
                                                         View
                                                     </a>
                                                 </td>
                                             </tr>
                                             <%
-                                            
-                                            i = i + 1
-                                            result.MoveNext
-                                        loop
+                                        next
                                     else
                                         Response.write("No booking table today")
                                     end if    

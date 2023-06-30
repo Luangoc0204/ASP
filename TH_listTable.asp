@@ -1,5 +1,12 @@
 <%@LANGUAGE="VBSCRIPT" CODEPAGE="65001"%>
 <!--#include file="connect.asp"-->
+<!--#include file="./models/user.asp" -->
+<!--#include file="./models/customer.asp" -->
+<!--#include file="./models/bookingTable.asp" -->
+<!--#include file="./models/bookingFood.asp" -->
+<!--#include file="./models/table.asp" -->
+<!--#include file="./models/food.asp" -->
+<!--#include file="./models/bill.asp" -->
 <%
     'connDB Close
     If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="" OR (Session("role")<>"ADMIN")) Then
@@ -46,11 +53,13 @@
                                     </li>
                                 </ul>
                                 <!-- Add Human -->
-                                <ul class="filters add-human" style="padding: 10px 20px;">
-                                    <i class="fa-solid fa-circle-plus" style="color: #ff8243; font-weight: 900;font-size: 44px;padding-right: 5px;"></i>
-                                    Add table
-                                    </li>
-                                </ul>
+                                <a href="TH_AddTable.asp">
+                                    <ul class="filters add-human" style="padding: 10px 20px;">
+                                        <i class="fa-solid fa-circle-plus" style="color: #ff8243; font-weight: 900;font-size: 44px;padding-right: 5px;"></i>
+                                        Add table
+                                        </li>
+                                    </ul>
+                                </a>
                                 <!--  -->
                             </div>
                         </div>
@@ -64,37 +73,54 @@
                             cmdPrep.ActiveConnection = connDB
                             cmdPrep.CommandType = 1
                             cmdPrep.Prepared = True
-                            cmdPrep.CommandText = "SELECT * FROM [Table] where isActive = 1"
+                            cmdPrep.CommandText = "SELECT [Table].* FROM [Table] where isActive = 1"
                             set result = cmdPrep.execute
+                            Set listTable = Server.CreateObject("Scripting.Dictionary")
+                            count = 0
                             do while not result.EOF
+                                set tableTemp = new Table
+                                tableTemp.idTable = result("idTable")
+                                tableTemp.typeTable = result("typeTable")
+                                tableTemp.amountTable = result("amountTable")
+                                tableTemp.isActive = result("isActive")
+                                tableTemp.imgTable = result("imgTable")
+                                
+                                listTable.add count, tableTemp
+                            count = count + 1
+                            result.MoveNext
+                            LOOP
+                            For i = 0 To (count-1)      
+
                         %>
                         <div class="col-lg-4 col-sm-6 dish-box-wp chef width25">
                             <div class="dish-box text-center">
                                 <div class="dist-img">
-                                    <img src="assets/images/TableDinner.jpg" alt="">
+                                    <img src="upload\table\<%=listTable(i).imgTable%>" alt="">
                                 </div>
                                 <div class="human-list">
                                         <table class="human-info">
                                             <tr>
                                                 <th>Type:</th>
-                                                <td><%=result("typeTable")%> People</td>
+                                                <td><%=listTable(i).typeTable%> People</td>
                                             </tr>
                                             <tr>                                                      
                                                 <th>Amount:</th>
-                                                <td><%=result("amountTable")%></td>
+                                                <td><%=listTable(i).amountTable%></td>
                                             </tr>
                                         </table>
                                 </div>
                                 <div class="dist-bottom-row">
                                     <ul>
-                                        <li href="">
-                                            <button class="dish-add-btn btn-buy-now">
-                                                <i class="fa-regular fa-pen-to-square fa-lg" style="color: #fff;"></i>
-                                                <span>Edit</span>
-                                            </button>
+                                        <li >
+                                            <a href="TH_AddTable.asp?idTable=<%=listTable(i).idTable%>">
+                                                <button class="dish-add-btn btn-buy-now">
+                                                    <i class="fa-regular fa-pen-to-square fa-lg" style="color: #fff;"></i>
+                                                    <span>Edit</span>
+                                                </button>
+                                            </a>
                                         </li>
                                         <li>
-                                            <button data-href="L_deleteTable.asp?idTable=<%=result("idTable")%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="dish-add-btn btn-add-to-cart">
+                                            <button data-href="L_deleteTable.asp?idTable=<%=listTable(i).idTable%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="dish-add-btn btn-add-to-cart">
                                                 <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>
                                                 <span style="padding-left: 5px;">Delete</span>
                                             </button>
@@ -104,8 +130,7 @@
                             </div>
                         </div>
                         <%
-                            result.MoveNext
-                            LOOP
+                            next
                         %>
                         <!--  -->
                     </div>

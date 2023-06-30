@@ -233,8 +233,20 @@
                 %>
                 <div class="controls">
                     <div class="controls_1">
-                        <button type="submit" class="btn btn-primary key" id="btn-submit">Set</button>
-                        <a href="TH_QL_quanlyNV.asp" type="button" class="btn btn-primary key">Cancel</a>
+                        <%
+                            ' true
+                            if (cint(idEmployee) = 0) then
+                        %>
+                            <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Add</button>
+                        <%    
+                            ' false
+                            Else
+                        %>
+                            <button id="btn-submit" type="submit" class="btn btn-primary key" style="padding: 0px 46px;">Set</button>
+                        <%
+                            End if
+                        %>
+                            <a href="L_menu.asp" type="button" class="btn btn-primary key">Cancel</a>
                     </div>
                 </div>
             </div>

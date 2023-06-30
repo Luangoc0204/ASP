@@ -14,7 +14,6 @@
     
     If (Request.ServerVariables("REQUEST_METHOD") = "GET") THEN
         idUser = Request.QueryString("idUser")
-        
         ' If (Len(idUser)<>0) Then
             Set cmdPrep = Server.CreateObject("ADODB.Command")
             connDB.Open()
@@ -75,7 +74,7 @@
             cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
             cmdPrep.execute
             Session("Success") = "The user was edited!"
-            Response.redirect("L_home.asp")
+            'Response.redirect(Session("ReturnBack"))
         End Function
         if (NOT isnull(nameUser) and TRIM(nameUser)<> "" and NOT isnull(birthday) and TRIM(birthday)<>"" and NOT isnull(phone) and TRIM(phone)<>"" and NOT isnull(address) and TRIM(address)<>"" and NOT isnull(email) and TRIM(email)<>"" and NOT isnull(password) and TRIM(password)<>"") then
 
@@ -111,7 +110,7 @@
                             End If
                             updateUser()
                             connDB.Close
-                            Response.redirect("TH_QL_quanlyNV.asp")
+                            Response.redirect(Session("ReturnBack"))
                     Else
                         ' false -> ngược lại thì không phải phone của Employee
                         
@@ -225,7 +224,7 @@
                         <div class="controls">
                             <div class="controls_1">
                                 <button id="btn-submit" type="button" class="btn btn-primary key">Set</button>
-                                <a href="TH_QL_quanlyNV.asp" type="button" class="btn btn-primary key">Cancel</a>
+                                <a href="<%=Session("ReturnBack")%>" type="button" class="btn btn-primary key">Cancel</a>
                             </div>
                         </div>
                     </div>
