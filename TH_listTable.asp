@@ -9,7 +9,7 @@
 <!--#include file="./models/bill.asp" -->
 <%
     'connDB Close
-    If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="" OR (Session("role")<>"ADMIN")) Then
+    If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="" OR (Session("role")="CUSTOMER")) Then
         Response.redirect("logout.asp")
     End If
     If (isnull(Session("idUser")) or trim(Session("idUser")) = "" ) then
@@ -53,6 +53,9 @@
                                     </li>
                                 </ul>
                                 <!-- Add Human -->
+                                <%
+                                    if (Session("role") = "ADMIN") then
+                                %>
                                 <a href="TH_AddTable.asp">
                                     <ul class="filters add-human" style="padding: 10px 20px;">
                                         <i class="fa-solid fa-circle-plus" style="color: #ff8243; font-weight: 900;font-size: 44px;padding-right: 5px;"></i>
@@ -60,6 +63,9 @@
                                         </li>
                                     </ul>
                                 </a>
+                                <%
+                                    end if
+                                %>
                                 <!--  -->
                             </div>
                         </div>
@@ -109,6 +115,9 @@
                                             </tr>
                                         </table>
                                 </div>
+                                <%
+                                    if (Session("role") = "ADMIN") then
+                                %>
                                 <div class="dist-bottom-row">
                                     <ul>
                                         <li >
@@ -127,6 +136,9 @@
                                         </li>
                                     </ul>
                                 </div>
+                                <%
+                                    end if
+                                %>
                             </div>
                         </div>
                         <%

@@ -82,11 +82,15 @@
 
                 cmdPrep.execute
                 Session("Success") = "The food was edited!"
-                If FSO.FileExists(Server.MapPath(".")&"\" & url & oldFileName) Then
-                    ' Nếu tệp tin tồn tại, thực hiện xóa
-                    FSO.DeleteFile(Server.MapPath(".")&"\"  & url & oldFileName)
-                    ' Response.Write "File " & oldFileName & " deleted. <br />"
-                End If
+                if (trim(newFileName) <> "") then
+                    If FSO.FileExists(Server.MapPath(".")&"\" & url & oldFileName) Then
+                        ' Nếu tệp tin tồn tại, thực hiện xóa
+                        FSO.DeleteFile(Server.MapPath(".")&"\"  & url & oldFileName)
+                        ' Response.Write "File " & oldFileName & " deleted. <br />"
+                    End If
+                else 
+                    newFileName = oldFileName      
+                end if    
                 connDB.Close
                 Response.redirect("L_menu.asp")
             else

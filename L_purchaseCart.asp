@@ -160,7 +160,7 @@
                         <div class="content-cart-left">
                             <div class="cart-img-name">
                                 <img class="img-product"
-                                    src="<%=listFood(i).imgFood%>"
+                                    src="upload\menu\<%=listFood(i).imgFood%>"
                                     alt="Image Food">
                                 <span class="name-food"><%=listFood(i).nameFood%></span>
                             </div>
@@ -236,7 +236,7 @@
                         <div class="content-cart-left">
                             <div class="cart-img-name">
                                 <img class="img-product"
-                                    src="<%=listFood(i).imgFood%>"
+                                    src="upload\menu\<%=listFood(i).imgFood%>"
                                     alt="Image Food">
                                 <span class="name-food"><%=listFood(i).nameFood%></span>
                             </div>
@@ -309,7 +309,7 @@
                         <div class="content-cart-left">
                             <div class="cart-img-name">
                                 <img class="img-product"
-                                    src="<%=listFood(i).imgFood%>"
+                                    src="upload\menu\<%=listFood(i).imgFood%>"
                                     alt="Image Food">
                                 <span class="name-food"><%=listFood(i).nameFood%></span>
                             </div>

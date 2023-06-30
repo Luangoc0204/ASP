@@ -103,11 +103,15 @@
                         ' true -> nếu phone của Employee = phone gửi theo form -> chính là Employee đó đang dùng phone -> update
                             ' Thực hiện chức năng khi upload thành công
                             ' ...
-                            If FSO.FileExists(Server.MapPath(".")&"\" & url & oldFileName) Then
-                                ' Nếu tệp tin tồn tại, thực hiện xóa
-                                FSO.DeleteFile(Server.MapPath(".")&"\"  & url & oldFileName)
-                                ' Response.Write "File " & oldFileName & " deleted. <br />"
-                            End If
+                            if (trim(newFileName) <> "") then
+                                If FSO.FileExists(Server.MapPath(".")&"\" & url & oldFileName) Then
+                                    ' Nếu tệp tin tồn tại, thực hiện xóa
+                                    FSO.DeleteFile(Server.MapPath(".")&"\"  & url & oldFileName)
+                                    ' Response.Write "File " & oldFileName & " deleted. <br />"
+                                End If
+                            else 
+                                newFileName = oldFileName    
+                            end if    
                             updateUser()
                             connDB.Close
                             Response.redirect(Session("ReturnBack"))

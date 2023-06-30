@@ -133,7 +133,7 @@
                     </div>
                 </div>
                 <%
-                <p class="p_error" style="padding: 5px 10px; height: 18px;"></p>	                    If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
+                    If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
                 %>
                 <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                
                 <%
