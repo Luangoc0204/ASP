@@ -45,6 +45,7 @@
         email = Request.Form("email")
         password = Request.Form("password")
         newFileName = Request.Form("url")
+        oldFileName = Request.Form("oldFileName")
         Dim FSO
         Set FSO = Server.CreateObject("Scripting.FileSystemObject")
         ' Tạo một Function để sử dụng lại
@@ -188,6 +189,7 @@
                 </form>
                 <form id="text-form" action="" method="post">
                     <input id="img-input" type="text" name="url" style="display: none;">
+                    <input id="img-input" type="text" value="<%=oldFileName%>" name="oldFileName" style="display: none;">
                     <div class="container_0">
                         <div class="header__one">
                             <div class="header_1">

@@ -7,7 +7,7 @@
 <!--#include file="./models/table.asp" -->
 <%
     'connDB Close
-    If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="" OR (Session("role")<>"ADMIN")) Then
+    If (isnull(Session("idUser")) OR TRIM(Session("idUser")) ="" OR (Session("role")="CUSTOMER")) Then
         Response.redirect("logout.asp")
     End If
     function Ceil(Number)

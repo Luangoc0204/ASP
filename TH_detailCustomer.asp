@@ -236,10 +236,10 @@
                                         cmdPrep.CommandType = 1
                                         cmdPrep.Prepared = True
                                         if (not isnull(idCustomer) and trim(idCustomer) <> "") then
-                                            cmdPrep.CommandText = "SELECT BookingTable.*,  typeTable FROM [BookingTable] inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [BookingTable].idUser = (SELECT idUser FROM Customer WHERE idCustomer = ?)"
+                                            cmdPrep.CommandText = "SELECT BookingTable.*,  typeTable FROM [BookingTable] inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [BookingTable].idUser = (SELECT idUser FROM Customer WHERE idCustomer = ?) order by dateBT desc"
                                             cmdPrep.parameters.Append cmdPrep.createParameter("idCustomer",3,1, ,CInt(idCustomer))   
                                         elseif (not isnull(idUser) and trim(idUser) <> "") then
-                                            cmdPrep.CommandText = "SELECT BookingTable.*,  typeTable FROM [BookingTable] inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [BookingTable].idUser = ?"
+                                            cmdPrep.CommandText = "SELECT BookingTable.*,  typeTable FROM [BookingTable] inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [BookingTable].idUser = ? order by dateBT desc"
                                             cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))   
                                         end if         
                                         set result = cmdPrep.execute

@@ -47,10 +47,11 @@
         priceFood = Request.form("priceFood")
         amountFood = Request.form("amountFood")
         newFileName = Request.Form("url")
+        oldFileName = Request.Form("oldFileName")
         Dim FSO
         Set FSO = Server.CreateObject("Scripting.FileSystemObject")
         if (cint(idFood) = 0) then
-            if (NOT isnull(nameFood) and TRIM(nameFood) <> "" and NOT isnull(newFileName) and TRIM(newFileName)<>"" and NOT isnull(typeFood) and TRIM(typeFood)<>"" and NOT isnull(forPerson) and TRIM(forPerson)<>"" and NOT isnull(priceFood) and TRIM(priceFood)<>"" and NOT isnull(amountFood) and TRIM(amountFood)<>"") then
+            if (NOT isnull(nameFood) and TRIM(nameFood) <> "" and NOT isnull(typeFood) and TRIM(typeFood)<>"" and NOT isnull(forPerson) and TRIM(forPerson)<>"" and NOT isnull(priceFood) and TRIM(priceFood)<>"" and NOT isnull(amountFood) and TRIM(amountFood)<>"") then
 
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
                 connDB.Open()
@@ -71,17 +72,8 @@
                 Session("ErrorTitle") = "You have to input enough info"
             end if
         else          
-            if (NOT isnull(nameFood) and TRIM(nameFood) <> "" and NOT isnull(newFileName) and TRIM(newFileName)<>"" and NOT isnull(typeFood) and TRIM(typeFood)<>"" and NOT isnull(forPerson) and TRIM(forPerson)<>"" and NOT isnull(priceFood) and TRIM(priceFood)<>"" and NOT isnull(amountFood) and TRIM(amountFood)<>"") then
+            if (NOT isnull(nameFood) and TRIM(nameFood) <> ""  and NOT isnull(typeFood) and TRIM(typeFood)<>"" and NOT isnull(forPerson) and TRIM(forPerson)<>"" and NOT isnull(priceFood) and TRIM(priceFood)<>"" and NOT isnull(amountFood) and TRIM(amountFood)<>"") then
                 
-                Set cmdPrep = Server.CreateObject("ADODB.Command")
-                connDB.Open()
-                cmdPrep.ActiveConnection = connDB
-                cmdPrep.CommandType = 1
-                cmdPrep.Prepared = True
-                cmdPrep.CommandText = "UPDATE Food SET nameFood='"&nameFood&"', imgFood='"&newFileName&"', typeFood='"&typeFood&"', forPerson='"&forPerson&"', priceFood='"&priceFood&"', amountFood='"&amountFood&"' WHERE idFood='"&idFood&"'"
-
-                cmdPrep.execute
-                Session("Success") = "The food was edited!"
                 if (trim(newFileName) <> "") then
                     If FSO.FileExists(Server.MapPath(".")&"\" & url & oldFileName) Then
                         ' Nếu tệp tin tồn tại, thực hiện xóa
@@ -91,6 +83,15 @@
                 else 
                     newFileName = oldFileName      
                 end if    
+                Set cmdPrep = Server.CreateObject("ADODB.Command")
+                connDB.Open()
+                cmdPrep.ActiveConnection = connDB
+                cmdPrep.CommandType = 1
+                cmdPrep.Prepared = True
+                cmdPrep.CommandText = "UPDATE Food SET nameFood='"&nameFood&"', imgFood='"&newFileName&"', typeFood='"&typeFood&"', forPerson='"&forPerson&"', priceFood='"&priceFood&"', amountFood='"&amountFood&"' WHERE idFood='"&idFood&"'"
+
+                cmdPrep.execute
+                Session("Success") = "The food was edited!"
                 connDB.Close
                 Response.redirect("L_menu.asp")
             else
@@ -154,6 +155,7 @@
                 </form>
                 <form id="text-form" method="post">
                 <input id="img-input" type="text" name="url" style="display: none;">
+                <input id="img-input" type="text" value="<%=oldFileName%>" name="oldFileName" style="display: none;">
                 <div class="header__one">
                     <div class="header_1">
                         <p class="header_title">Name:</p>

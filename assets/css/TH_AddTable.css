@@ -29,7 +29,6 @@
     transform: scale(1.01);
 }
 .header_0 {
-    margin-top: 5%;
     text-align: center;
     color: var(--main-color);
     font-weight: bold;
@@ -47,8 +46,8 @@
     font-weight: 600;
     text-align: center;
     justify-content:center;
-    width: 380px;
-    display: table;
+    width: 100%;
+    display: flex;
 }
 .header_title {
     display: table-cell;
@@ -64,13 +63,14 @@
     width: 226px;
 }
 .header_2{
+    height: 35px;
     outline: none;
     resize: none;
     color: var(--main-color);
-    width: 90%;
+    width: 200px;
     border: 1px solid var(--main-color);  
     padding: 5px 5px 5px 10px;
-    border-radius: 15px;
+    border-radius: 5px;
 }
 .controls_1{
     display: flex;
@@ -119,6 +119,8 @@
     text-decoration: none;
 }
 .header_21{
+    height: 35px;
+    border-radius: 5px;
     outline: none;
     resize: none;
     color: var(--main-color);
@@ -130,4 +132,75 @@
 .type_input {
     display: flex;
     padding-left: 16%;
+}
+/* css của hình ảnh */
+.human-list {
+    position: relative;
+    background-color: white;
+    padding-top: 115px !important;
+}
+.dish-box {
+    border-radius: 30px;
+    background: white;
+    border: 1px solid var(--main-color);
+    display: flow-root;
+    padding: 0 0px 0px;
+    margin: 130px 0 0px;
+    transition: 0.8s cubic-bezier(0.22, 0.78, 0.45, 1.02);
+    width: 420px;
+}
+.box {
+    position: relative;
+    margin-top: 108px;
+    padding-top: 90px !important;
+}
+.dist-img {
+    position: absolute;
+    top: -80%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.dist-img img {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-top: 20px;
+    object-fit: cover;
+}
+.gr-img {
+    position: absolute;
+    top: -25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.camera-above {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    margin-top: 20px;
+    left: 0;
+    border: 1px solid var(--main-color);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.5),
+        rgba(255, 255, 255, 0)
+    );
+    background-size: 100% 200%;
+    background-position: bottom;
+    transition: background-position 0.3s ease;
+}
+.camera-above:hover {
+    background-position: top;
+}
+
+.camera-above i {
+    color: var(--main-color);
+    font-size: 25px;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
 }
