@@ -128,7 +128,7 @@
                             <div class="dist-img">
                                 <div style="position:relative">
                                 <%
-                                    If (trim(oldFileName)="") Then
+                                    If (isnull(oldFileName) or trim(oldFileName)="") Then
                                         ' true
                                 %>
                                     <img src="<%=url%>\demo.jpg" alt="avatar" id="img-preview">
