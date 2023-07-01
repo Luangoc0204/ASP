@@ -34,7 +34,7 @@
             connDB.Close()
         Else 
             'đăng nhập không thành công
-            Session("Error") = "Wrong username or password!"
+            Session("SI_Error") = "Wrong username or password!"
         end if  
 
     Else
@@ -58,10 +58,9 @@
     birthday = Request.Form("birthday")
     'Response.write(CStr(birthday))
     address = Request.Form("address")
-    avatar = Request.Form("avatar")
     phone = Request.Form("phone")
     email_signUp = Request.Form("email_signUp")
-    If (NOT isnull(email_signUp) AND NOT isnull(name) AND NOT isnull(birthday) AND NOT isnull(address) AND NOT isnull(avatar) and trim(email_signUp) <>"" and trim(name)<>"" and trim(birthday)<>"" and trim(address)<>"" and trim(avatar)<>"") then
+    If (NOT isnull(email_signUp) AND NOT isnull(name) AND NOT isnull(birthday) AND NOT isnull(address) and trim(email_signUp) <>"" and trim(name)<>"" and trim(birthday)<>"" and trim(address)<>"") then
         ' true
         connDB.Open
         sql = "select * from Account where username = ?"
@@ -87,14 +86,13 @@
             cmdPrep.Prepared = true ' Sử dụng truy vấn chuẩn bị
 
             ' Truy vấn INSERT USER_INFO
-            sql_insertUSER = "SET NOCOUNT ON; INSERT INTO [USER](nameUser, birthday, phone, [address], email, avatar) VALUES(?, ?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY() as ID"
+            sql_insertUSER = "SET NOCOUNT ON; INSERT INTO [USER](nameUser, birthday, phone, [address], email) VALUES(?, ?, ?, ?, ?); SELECT SCOPE_IDENTITY() as ID"
             cmdPrep.CommandText = sql_insertUSER
             cmdPrep.parameters.Append cmdPrep.createParameter("name",202,1,255,name)
             cmdPrep.parameters.Append cmdPrep.createParameter("birthday",202,1,255,birthday)
             cmdPrep.parameters.Append cmdPrep.createParameter("phone",202,1,255,phone)
             cmdPrep.parameters.Append cmdPrep.createParameter("address",202,1,255,address)
             cmdPrep.parameters.Append cmdPrep.createParameter("email",202,1,255,email_signUp)
-            cmdPrep.parameters.Append cmdPrep.createParameter("avatar",202,1,255,avatar)
 
             'cmdPrep.execute
             ' Lấy ID vừa thêm vào USER_INFO
@@ -119,6 +117,16 @@
                 cmdPrep.parameters.Append cmdPrep.createParameter("username",202,1,255,phone)
                 cmdPrep.parameters.Append cmdPrep.createParameter("password",202,1,255,password2)
                 cmdPrep.execute
+                'tạo customer
+                set cmdPrep = Server.CreateObject("ADODB.Command")
+                cmdPrep.ActiveConnection = connDB
+                cmdPrep.CommandType = 1 ' 1: adCmdText - câu lệnh SQL văn bản
+                cmdPrep.Prepared = true ' Sử dụng truy vấn chuẩn bị
+                sql_insertTAIKHOAN = "INSERT INTO Customer(idUser) VALUES(?)"
+                cmdPrep.CommandText = sql_insertTAIKHOAN
+                cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1 , ,newId)
+                cmdPrep.execute
+                Session("role") = "CUSTOMER"
                 Session("idUser") = newId
                 Session("Success") = "Create Account Successfully with username: " + phone + " , password: " + password2
                 connDB.Close()
@@ -153,7 +161,6 @@
                 <input name="name" type="text" placeholder="Name" />
                 <input name="birthday" type="date" placeholder="Birthday" />
                 <input name="address" type="text" placeholder="Address" />
-                <input name="avatar" type="text" placeholder="Avatar Link" />
                 <input name="phone" type="text" placeholder="Phone" />
                 <input name="email_signUp" type="email" placeholder="Email" />
                 <%
@@ -189,16 +196,16 @@
                 </div>
                 
                 <%
-                    If (NOT isnull(Session("Error"))) AND (TRIM(Session("Error"))<>"") Then
+                    If (NOT isnull(Session("SI_Error"))) AND (TRIM(Session("SI_Error"))<>"") Then
                 %>
-                <p style="color:red; height:24px; margin:0"><%=Session("Error")%></p>
+                <p style="color:red; height:24px; margin:0"><%=Session("SI_Error")%></p>
                 <script>
                     $(document).ready(function() {
                         $('#container').removeClass('animate__animated animate__fadeInDown')
                     })
                 </script>
                 <%
-                    Session.Contents.Remove("Error")
+                    Session.Contents.Remove("SI_Error")
                     Else          
                 %>
                 <p style="color:red; height:24px; margin:0"></p>

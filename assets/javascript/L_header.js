@@ -74,7 +74,7 @@ function getTop5Cart() {
                 console.log('CardFood:' + CartFood);
                 html += `
                     <div class="index_product">
-                        <img class="cart_img" src="${CartFood.food[0].imgFood}" alt="">
+                        <img class="cart_img" src="upload\\menu\\${CartFood.food[0].imgFood}" alt="">
                         <div class="group_name_price">
                             <span class="cart_name">${CartFood.food[0].nameFood}</span>
                             <span class="cart_price">${CartFood.food[0].priceFood} $</span>

@@ -55,7 +55,7 @@
             
     %>
     <p style="display:none" class="idBookingTable"><%=idBookingTable%></p>
-    <p style="display:none" class="ád"><%=isCheckin%></p>
+    <p style="display:none" class="ischeckin"><%=isCheckin%></p>
     <%
         end if
     %>
@@ -415,12 +415,12 @@
                         <div class="percent-discount">
                             <h4>
                                 <%
-                                    if (isnull(idBookingTable)  and trim(idBookingTable) ="") then
+                                    if (isnull(idBookingTable)  or trim(idBookingTable) ="") then
                                         set cmdPrep = Server.CreateObject("ADODB.Command")
                                         cmdPrep.ActiveConnection = connDB
                                         cmdPrep.CommandType = 1
                                         cmdPrep.Prepared = True
-                                        cmdPrep.CommandText = "SELECT discount FROM Customer where idUser = ? "
+                                        cmdPrep.CommandText = "SELECT * FROM Customer where idUser = ?" 
                                         cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(Session("idUser")))
                                         set result = cmdPrep.execute
                                     else 

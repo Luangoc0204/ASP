@@ -138,7 +138,7 @@
                                     %>
                                     <div class="info">
                                         <%
-                                            if (trim(result("avatar"))="") then
+                                            if (isnull(result("avatar")) or trim(result("avatar"))="") then
                                         %>
                                         <img src="upload\user\user.png" alt="">
                                         <%

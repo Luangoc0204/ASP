@@ -120,7 +120,7 @@
                         <div class="dish-box text-center">
                             <div class="dist-img">
                                 <%
-                                    If (trim(userTemp.avatar)="") Then
+                                    If (isnull(userTemp.avatar) or trim(userTemp.avatar)="") Then
                                     ' true
                                 %>
                                 <img src="upload\user\user.png" alt="">
