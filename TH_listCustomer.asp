@@ -110,8 +110,7 @@
                                         cmdPrep.CommandText = "SELECT * FROM [User] INNER JOIN [Customer] ON [User].idUser = [Customer].idUser"
                                     else
                                         'tìm KH theo tên
-                                        cmdPrep.CommandText = "SELECT * FROM [User] INNER JOIN [Customer] ON [User].idUser = [Customer].idUser WHERE [User].nameUser = ?"
-                                        cmdPrep.parameters.Append cmdPrep.createParameter("nameSearch",202,1,255,nameSearch)
+                                        cmdPrep.CommandText = "SELECT * FROM [User] INNER JOIN [Customer] ON [User].idUser = [Customer].idUser WHERE [User].nameUser like N'%"&nameSearch&"%'"
                                     end if
                                     set result = cmdPrep.execute
                                     if not result.EOF Then
@@ -143,7 +142,7 @@
                                 <!-- Search Human -->
                                 <ul class="filters search-button">
                                     <form method="post" action="" style="display:flex">
-                                        <input type="text" class="search-input" name="nameSearch" value="<%=nameSearch%>" placeholder="Search here ...">
+                                        <input type="text" class="search-input" name="nameSearch" value="<%=nameSearch%>" placeholder="Search by name ...">
                                         <button type="submit" class="search-icon">
                                             <i class="fa fa-search"></i>
                                         </button>
