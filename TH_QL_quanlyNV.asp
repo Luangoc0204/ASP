@@ -79,8 +79,7 @@
                                         cmdPrep.CommandText = "SELECT [User].*, idEmployee, salary, position FROM [User] INNER JOIN [Employee] ON [User].idUser = [Employee].idUser"
                                     else
                                         'tìm NV theo tên
-                                        cmdPrep.CommandText = "SELECT [User].*, idEmployee, salary, position FROM [User] INNER JOIN [Employee] ON [User].idUser = [Employee].idUser where [User].nameUser = ?"
-                                        cmdPrep.parameters.Append cmdPrep.createParameter("nameSearch",202,1,255,nameSearch)
+                                        cmdPrep.CommandText = "SELECT [User].*, idEmployee, salary, position FROM [User] INNER JOIN [Employee] ON [User].idUser = [Employee].idUser where [User].nameUser like N'%"&nameSearch&"%'"
                                     end if
                                     set result = cmdPrep.execute
                                     Set listUser = Server.CreateObject("Scripting.Dictionary")
