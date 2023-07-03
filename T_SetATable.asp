@@ -106,6 +106,14 @@
 </head>
 <body>
     <!-- #include file="header.asp" -->
+    <%
+        If (idBookingTable<>0) Then
+    %>
+    <p id="isUpdate" style="display:none">1</p>
+    <%
+        end if
+    %>
+    <p id="role" style="display:none"><%=Session("role")%></p>
     <div class="div_container">
         <form action="" method="post">
             <div class="container_0">
@@ -177,12 +185,12 @@
                 <%
                     If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 100%; white-space: break-spaces;"><%=Session("ErrorTitle")%></p>                
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red; width: 350px; white-space: break-spaces;margin: 0 auto;"><%=Session("ErrorTitle")%></p>                
                 <%
                     Session.Contents.Remove("ErrorTitle")
                     else
                 %>
-                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 100%; white-space: break-spaces;"></p>                <%
+                <p class="p_error" style="padding: 5px 10px; height: 24px; text-align: center; color: red;width: 350px; white-space: break-spaces;margin: 0 auto;"></p>                <%
                     end if
                 %>
                 <div class="controls">
@@ -196,7 +204,7 @@
                         <%
                             else
                         %>
-                        <button type="submit" class="btn btn-primary key">Set</button>
+                        <button id="btn-submit" type="submit" class="btn btn-primary key btn-setTable">Set</button>
                         <%
                             end if
                         %>

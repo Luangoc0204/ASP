@@ -123,23 +123,23 @@
                         </div>
 
                         <div class="book-table-info">
-                            <div class="row align-items-center">
-                                <div class="col-lg-4">
-                                    <div class="table-title text-center">
-                                        <h3>Monday to Thrusday</h3>
-                                        <p>9:00 am - 22:00 pm</p>
-                                    </div>
-                                </div>
+                            <div class="row align-items-center" style="display: flex; justify-content: space-around;">
                                 <div class="col-lg-4">
                                     <div class="call-now text-center">
-                                        <img src="./assets/images/icon_phone_line.png" class="uil uil-phone"></img>
+                                        <img src="./assets/images/icon_phone_line.png" class="uil uil-phone">
                                         <a href="tel:+91-8866998866">+10 - 1010101010</a>
                                     </div>
                                 </div>
                                 <div class="col-lg-4">
                                     <div class="table-title text-center">
-                                        <h3>Friday to Sunday</h3>
-                                        <p>11::00 am to 20:00 pm</p>
+                                        <h3>Monday to Sunday</h3>
+                                        <p>
+                                            
+                                            <span class="timeOpen"></span>
+                                            <span style="margin:0 10px"><b>to</b></span>
+                                            <span class="timeClose"></span>
+                                            
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -171,10 +171,10 @@
 
                                     <div class="swiper-button-wp">
                                         <div class="swiper-button-prev swiper-button">
-                                            <img src="./assets/images/icon_left_fill.png" class="uil uil-angle-left"></img>
+                                            <img src="./assets/images/icon_left_fill.png" class="uil uil-angle-left">
                                         </div>
                                         <div class="swiper-button-next swiper-button">
-                                            <img src="./assets/images/icon_right_fill.png" class="uil uil-angle-right"></img>
+                                            <img src="./assets/images/icon_right_fill.png" class="uil uil-angle-right">
                                         </div>
                                     </div>
                                     <div class="swiper-pagination"></div>
@@ -233,8 +233,11 @@
                                 <div class="footer-table-info">
                                     <h3 class="h3-title">open hours</h3>
                                     <ul>
-                                        <li><i class="uil uil-clock"></i> Mon-Thurs : 9am - 22pm</li>
-                                        <li><i class="uil uil-clock"></i> Fri-Sun : 11am - 22pm</li>
+                                        <li><i class="uil uil-clock"></i> Mon-Sun : 
+                                            <span class="timeOpen"></span>
+                                            <span style="margin:0 10px"><b>-</b></span>
+                                            <span class="timeClose"></span>
+                                        </li>
                                     </ul>
                                 </div>
                                 <div class="footer-menu">
@@ -290,5 +293,37 @@
     <!-- main js -->
     <script src="./main.js"></script>
     <script src="./assets/javascript/L_header.js"></script>
+    <script>
+        $(function () {
+            $.ajax({
+                type: 'GET',
+                url: 'L_getTimeOpenClose.asp',
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                     // Xử lý kết quả trả về từ file uploadImage.asp
+                    //console.log("thành công")
+                    console.log(response);
+                    var responseObject = JSON.parse(response);
+                    // ...
+                        // Lấy giá trị timeOpen và timeClose từ phần tử đầu tiên của mảng
+                        var timeOpen = responseObject.map((item) => item.timeOpen)[0];
+                        var timeClose = responseObject.map((item) => item.timeClose)[0];
+                        console.log('timeOpen: ' + timeOpen);
+                        console.log('timeClose: ' + timeClose);
+                        const listTimeOpen = document.querySelectorAll('.timeOpen')
+                        const listTimeClose = document.querySelectorAll('.timeClose')
+                        listTimeOpen.forEach(function(element){
+                            element.innerText = timeOpen.substr(0, 5);
+                        })
+                        listTimeClose.forEach(function(element){
+                            element.innerText = timeClose.substr(0, 5);
+                        })
+                        
+                },
+            });
+        });
+    </script>
 </body>
 </html>
