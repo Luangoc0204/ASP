@@ -440,21 +440,25 @@ function checkRemainingAgain() {
             });
             myModal.show();
             countdown();
-            document
-                .querySelector('.btn-continue-purchase')
-                .addEventListener('click', () => {
-                    myModal.hide();
-                    loading.style.display = 'flex';
-                    if (idBookingTable.trim() == '') {
-                        purchaseCart(
-                            listIdCartFood,
-                            idFoodBuyNow,
-                            amountFoodBuyNow
-                        );
-                    } else {
-                        purchaseBookingTable(listProductSoldOutId);
-                    }
-                });
+            if (listIdCartFood.length === 0){
+                document.querySelector('.btn-continue-purchase').style.display = 'none'
+            } else{
+                document
+                    .querySelector('.btn-continue-purchase')
+                    .addEventListener('click', () => {
+                        myModal.hide();
+                        loading.style.display = 'flex';
+                        if (idBookingTable.trim() == '') {
+                            purchaseCart(
+                                listIdCartFood,
+                                idFoodBuyNow,
+                                amountFoodBuyNow
+                            );
+                        } else {
+                            purchaseBookingTable(listProductSoldOutId);
+                        }
+                    });
+            }
         }
     }, 2000);
 }

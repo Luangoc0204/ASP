@@ -25,10 +25,12 @@
                 dateBT = result("dateBT")
                 timeBT = result("timeBT")
                 noteBT = result("noteBT")
+                isCheckin = result("isCheckin")
                 'Response.write(timeBT + "<br>")
             End If
             result.Close()
         End if
+        connDB.Close
     Else
         idBookingTable = Request.QueryString("idBookingTable")
         If (isnull(idBookingTable) OR trim(idBookingTable) = "") then 
@@ -40,7 +42,7 @@
         timeBT = Request.form("timeBT")
         noteBT = Request.form("noteBT")
         if (cint(idBookingTable) = 0) then
-            if (NOT isnull(amountBT) and amountBT<>"" and NOT isnull(dateBT) and dateBT<>"" and NOT isnull(timeBT) and timeBT<>"" and NOT isnull(noteBT) and noteBT<>"") then
+            if (NOT isnull(amountBT) and amountBT<>"" and NOT isnull(dateBT) and dateBT<>"" and NOT isnull(timeBT) and timeBT<>"" ) then
 
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
                 connDB.Open()
@@ -57,12 +59,14 @@
 
                 cmdPrep.execute
                 Session("Success") = "New booking table was added!"
+                connDB.Close
                 Response.redirect("L_home.asp")
             else
                 Session("Error") = "You have to input enough info!!!"
+                'connDB.Close
             end if
         else          
-            if (NOT isnull(amountBT) and amountBT<>"" and NOT isnull(dateBT) and dateBT<>"" and NOT isnull(timeBT) and timeBT<>"" and NOT isnull(noteBT) and noteBT<>"") then
+            if (NOT isnull(amountBT) and amountBT<>"" and NOT isnull(dateBT) and dateBT<>"" and NOT isnull(timeBT) and timeBT<>"") then
 
                 Set cmdPrep = Server.CreateObject("ADODB.Command")
                 connDB.Open()
@@ -77,13 +81,15 @@
                 cmdPrep.parameters.Append cmdPrep.createParameter("idTable",202,1,255,idBookingTable)
                 cmdPrep.execute
                 Session("Success") = "The booking table was edited!"
+                connDB.Close
                 Response.redirect(Session("ReturnBack"))
             else
                 Session("Error") = "You have to input enough info!!!"
+                'connDB.Close
             end if   
         end if
     End if         
-    connDB.Close
+    'connDB.Close
 %>
 
 <!DOCTYPE html>
@@ -105,6 +111,38 @@
             <div class="container_0">
                 <h1 class="header_0">Set a table</h1>
                 <div class="header__one">
+                <%
+                    if (isCheckin = true and Session("role") <> "ADMIN") then
+                %>
+                    <div class="header_1">
+                        <p class="header_title">Type:</p>
+                        <select disabled class="ais-SortBy-select" id="typeTable" name="typeTable" value="<%=typeTable%>">
+                            <option class="ais-SortBy-option" value="2">2 people</option>
+                            <option class="ais-SortBy-option" value="4">4 people</option>
+                            <option class="ais-SortBy-option" value="6">6 people</option>
+                            <option class="ais-SortBy-option" value="10">10 people</option>
+                        </select>
+                    </div>
+                    <div class="header_1">
+                        <p class="header_title">Amount:</p>
+                        <input readonly type="number" min="1" class="header_2" id="amountBT" name="amountBT" value="<%=amountBT%>">
+                    </div>
+                    <div class="header_1">
+                        <p class="header_title">Date:</p>
+                        <input readonly type="date" class="header_2" id="dateBT" name="dateBT" value="<%=dateBT%>">
+                    </div>
+                    <div class="header_1">
+                        <p class="header_title">Time:</p>
+                        <p style="display:none" id="timeBT"><%=timeBT%></p>
+                        <input readonly id = "timeBT2" type="time" class="header_2" class="input_timeBT" name="timeBT" value="<%=Left(timeBT,5)%>">
+                    </div>
+                    <div class="header_1">
+                        <p class="header_title">Note:</p>
+                        <input readonly type="text" class="header_3" id="noteBT" name="noteBT" value="<%=noteBT%>">
+                    </div>
+                <%
+                    else
+                %>
                     <div class="header_1">
                         <p class="header_title">Type:</p>
                         <select class="ais-SortBy-select" id="typeTable" name="typeTable" value="<%=typeTable%>">
@@ -131,7 +169,11 @@
                         <p class="header_title">Note:</p>
                         <input type="text" class="header_3" id="noteBT" name="noteBT" value="<%=noteBT%>">
                     </div>
+                <%
+                    end if
+                %>
                 </div>
+
                 <%
                     If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then
                 %>
@@ -145,21 +187,29 @@
                 %>
                 <div class="controls">
                     <div class="controls_1">
+                        <%
+                            if (isCheckin = true and Session("role") <> "ADMIN") then
+                        %>
+                        <a href="<%=Session("ReturnBack")%>" style="text-decoration: none">
+                            <button type="button" class="btn btn-primary key">Cancel</button>
+                        </a>
+                        <%
+                            else
+                        %>
                         <button type="submit" class="btn btn-primary key">Set</button>
                         <%
-                            Set cmdPrep = Server.CreateObject("ADODB.Command")
-                            cmdPrep.ActiveConnection = connDB
-                            cmdPrep.CommandType = 1
-                            cmdPrep.Prepared = True
-                            cmdPrep.CommandText = "select * from Bill where idBookingTable = ?"
-                            cmdPrep.parameters.Append cmdPrep.createParameter("idBookingTable",202,1,255,idBookingTable)
-                            set result = cmdPrep.execute
-                            if result.EOF then
-                                If (isnull(Session("idUser")) OR TRIM(Session("idUser")) = "" OR Session("role") <> "CUSTOMER") Then
+                            end if
+                        %>
+                        <%
+                            
+                            If (isnull(Session("idUser")) OR TRIM(Session("idUser")) = "" OR Session("role") = "ADMIN") Then
                         %>
                         <button type="button" data-href="L_deleteBookingTable.asp?idBookingTable=<%=idBookingTable%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="btn btn-primary delete-btn">Delete</button>
                         <%
-                                end if
+                            elseif (isCheckin = false and Session("role") = "EMPLOYEE") then
+                        %>
+                        <button type="button" data-href="L_deleteBookingTable.asp?idBookingTable=<%=idBookingTable%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" class="btn btn-primary delete-btn">Delete</button>
+                        <%
                             end if    
                         %>
                     </div>

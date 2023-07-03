@@ -508,11 +508,19 @@
                             set result = cmdPrep.execute
                             if not result.EOF then
                             'nếu tồn tại Bill
+                                if(Session("role") = "CUSTOMER") then
+                    %>
+                        <button disabled class="disable-btn-input">
+                            <h2>Purchase</h2>
+                        </button>
+                    <%
+                                else
                     %>
                         <button id="button-purchase" data-id-bill =<%=result("idBill")%>>
                             <h2>Update</h2>
                         </button>
                     <%
+                                end if
                             else
                             'nếu ko tồn tại Bill
                                 if(Session("role") = "CUSTOMER" and isCheckin = "True") then

@@ -64,8 +64,13 @@
             cmdPrep.parameters.Append cmdPrep.createParameter("avatar",202,1,255,CStr(newFileName))
             cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
                         
-            set result = cmdPrep.execute
+            cmdPrep.execute
 
+            
+            'Response.redirect(Session("ReturnBack"))
+        End Function
+        Function updateAccount()
+            ' Do Something...
             Set cmdPrep = Server.CreateObject("ADODB.Command")
             cmdPrep.ActiveConnection = connDB
             cmdPrep.CommandType = 1
@@ -75,60 +80,124 @@
             cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))
             cmdPrep.execute
             Session("Success") = "The user was edited!"
-            'Response.redirect(Session("ReturnBack"))
         End Function
-        if (NOT isnull(nameUser) and TRIM(nameUser)<> "" and NOT isnull(birthday) and TRIM(birthday)<>"" and NOT isnull(phone) and TRIM(phone)<>"" and NOT isnull(address) and TRIM(address)<>"" and NOT isnull(email) and TRIM(email)<>"" and NOT isnull(password) and TRIM(password)<>"") then
+        if (NOT isnull(nameUser) and TRIM(nameUser)<> "" and NOT isnull(birthday) and TRIM(birthday)<>"" and NOT isnull(phone) and TRIM(phone)<>"" and NOT isnull(address) and TRIM(address)<>"" and NOT isnull(email) and TRIM(email)<>"") then
+            if (CInt(idUser) <> CInt(Session("idUser"))) then
+                'nếu admin/employee chỉnh sửa thông tin customer
+                connDB.Open()
+                Set cmdPrep = Server.CreateObject("ADODB.Command")
+                cmdPrep.ActiveConnection = connDB
+                cmdPrep.CommandType = 1
+                cmdPrep.Prepared = True
 
-            connDB.Open()
-            Set cmdPrep = Server.CreateObject("ADODB.Command")
-            cmdPrep.ActiveConnection = connDB
-            cmdPrep.CommandType = 1
-            cmdPrep.Prepared = True
-
-            cmdPrep.CommandText = "select * from [User] where phone = '"&phone&"'"
-            set result = cmdPrep.execute
-            ' Kiểm tra kết quả result
-            ' nếu có tồn tại
-            if not result.EOF then
-                'nếu có tồn tại phone
-                phoneTemp = result("phone")
-                If (Cint(idUser) <> 0) Then
-                    Set cmdPrep = Server.CreateObject("ADODB.Command")
-                    cmdPrep.ActiveConnection = connDB
-                    cmdPrep.CommandType = 1
-                    cmdPrep.Prepared = True
-                    cmdPrep.CommandText = "select [User].*, [password] from [User] inner join [Account] on [User].idUser = [Account].idUser where [User].idUser = '"&idUser&"'"
-                    set result = cmdPrep.execute
-                    oldFileName = result("avatar")
-                    If (result("phone") = phoneTemp) Then
-                        ' true -> nếu phone của Employee = phone gửi theo form -> chính là Employee đó đang dùng phone -> update
-                            ' Thực hiện chức năng khi upload thành công
-                            ' ...
-                            if (trim(newFileName) <> "") then
-                                If FSO.FileExists(Server.MapPath(".")&"\" & url & oldFileName) Then
-                                    ' Nếu tệp tin tồn tại, thực hiện xóa
-                                    FSO.DeleteFile(Server.MapPath(".")&"\"  & url & oldFileName)
-                                    ' Response.Write "File " & oldFileName & " deleted. <br />"
-                                End If
-                            else 
-                                newFileName = oldFileName    
-                            end if    
-                            updateUser()
+                cmdPrep.CommandText = "select * from [User] where phone = '"&phone&"'"
+                set result = cmdPrep.execute
+                ' Kiểm tra kết quả result
+                ' nếu có tồn tại
+                if not result.EOF then
+                    'nếu có tồn tại phone
+                    phoneTemp = result("phone")
+                    If (Cint(idUser) <> 0) Then
+                        Set cmdPrep = Server.CreateObject("ADODB.Command")
+                        cmdPrep.ActiveConnection = connDB
+                        cmdPrep.CommandType = 1
+                        cmdPrep.Prepared = True
+                        cmdPrep.CommandText = "select [User].*, [password] from [User] inner join [Account] on [User].idUser = [Account].idUser where [User].idUser = '"&idUser&"'"
+                        set result = cmdPrep.execute
+                        oldFileName = result("avatar")
+                        If (result("phone") = phoneTemp) Then
+                            ' true -> nếu phone của Employee = phone gửi theo form -> chính là Employee đó đang dùng phone -> update
+                                ' Thực hiện chức năng khi upload thành công
+                                ' ...
+                                if (trim(newFileName) <> "") then
+                                    If FSO.FileExists(Server.MapPath(".")&"\" & url & oldFileName) Then
+                                        ' Nếu tệp tin tồn tại, thực hiện xóa
+                                        FSO.DeleteFile(Server.MapPath(".")&"\"  & url & oldFileName)
+                                        ' Response.Write "File " & oldFileName & " deleted. <br />"
+                                    End If
+                                else 
+                                    newFileName = oldFileName    
+                                end if    
+                                updateUser()
+                                connDB.Close
+                                Response.redirect(Session("ReturnBack"))
+                        Else
+                            ' false -> ngược lại thì không phải phone của Employee
+                            
+                            If FSO.FileExists(Server.MapPath(".")&"\"  & url & newFileName) Then
+                                ' Nếu tệp tin tồn tại, thực hiện xóa
+                                FSO.DeleteFile(Server.MapPath(".")&"\"  & url & newFileName)
+                                ' Response.Write "File " & oldFileName & " deleted. <br />"
+                            End If
+                            Session("ErrorTitle") = "Phone is existed!"
                             connDB.Close
-                            Response.redirect(Session("ReturnBack"))
-                    Else
-                        ' false -> ngược lại thì không phải phone của Employee
-                        
-                        If FSO.FileExists(Server.MapPath(".")&"\"  & url & newFileName) Then
-                            ' Nếu tệp tin tồn tại, thực hiện xóa
-                            FSO.DeleteFile(Server.MapPath(".")&"\"  & url & newFileName)
-                            ' Response.Write "File " & oldFileName & " deleted. <br />"
-                        End If
-                        Session("ErrorTitle") = "Phone is existed!"
-                        connDB.Close
-                    End if
-                End if     
-            End if  
+                        End if
+                    End if     
+                End if
+            elseif (CInt(idUser) = CInt(Session("idUser")) and isnull(password) or trim(password) = "") then
+                'nếu đúng là người dùng tự sửa thông tin của mình nhưng thiếu pass
+                If FSO.FileExists(Server.MapPath(".")&"\"  & url & newFileName) Then
+                    ' Nếu tệp tin tồn tại, thực hiện xóa
+                    FSO.DeleteFile(Server.MapPath(".")&"\"  & url & newFileName)
+                    ' Response.Write "File " & oldFileName & " deleted. <br />"
+                End If
+                Session("ErrorTitle") = "You have to input enough info"
+            elseif (CInt(idUser) = CInt(Session("idUser")) and not isnull(password) and trim(password) <> "") then
+                'nếu đúng là người dùng tự sửa thông tin của mình và nhập đầy đủ thông tin
+                connDB.Open()
+                Set cmdPrep = Server.CreateObject("ADODB.Command")
+                cmdPrep.ActiveConnection = connDB
+                cmdPrep.CommandType = 1
+                cmdPrep.Prepared = True
+
+                cmdPrep.CommandText = "select * from [User] where phone = '"&phone&"'"
+                set result = cmdPrep.execute
+                ' Kiểm tra kết quả result
+                ' nếu có tồn tại
+                if not result.EOF then
+                    'nếu có tồn tại phone
+                    phoneTemp = result("phone")
+                    If (Cint(idUser) <> 0) Then
+                        Set cmdPrep = Server.CreateObject("ADODB.Command")
+                        cmdPrep.ActiveConnection = connDB
+                        cmdPrep.CommandType = 1
+                        cmdPrep.Prepared = True
+                        cmdPrep.CommandText = "select [User].*, [password] from [User] inner join [Account] on [User].idUser = [Account].idUser where [User].idUser = '"&idUser&"'"
+                        set result = cmdPrep.execute
+                        oldFileName = result("avatar")
+                        If (result("phone") = phoneTemp) Then
+                            ' true -> nếu phone của Employee = phone gửi theo form -> chính là Employee đó đang dùng phone -> update
+                                ' Thực hiện chức năng khi upload thành công
+                                ' ...
+                                if (trim(newFileName) <> "") then
+                                    If FSO.FileExists(Server.MapPath(".")&"\" & url & oldFileName) Then
+                                        ' Nếu tệp tin tồn tại, thực hiện xóa
+                                        FSO.DeleteFile(Server.MapPath(".")&"\"  & url & oldFileName)
+                                        ' Response.Write "File " & oldFileName & " deleted. <br />"
+                                    End If
+                                else 
+                                    newFileName = oldFileName    
+                                end if    
+                                updateUser()
+                                updateAccount()
+                                connDB.Close
+                                Response.redirect(Session("ReturnBack"))
+                        Else
+                            ' false -> ngược lại thì không phải phone của Employee
+                            
+                            If FSO.FileExists(Server.MapPath(".")&"\"  & url & newFileName) Then
+                                ' Nếu tệp tin tồn tại, thực hiện xóa
+                                FSO.DeleteFile(Server.MapPath(".")&"\"  & url & newFileName)
+                                ' Response.Write "File " & oldFileName & " deleted. <br />"
+                            End If
+                            Session("ErrorTitle") = "Phone is existed!"
+                            connDB.Close
+                        End if
+                    End if     
+                End if  
+            
+
+            end if
         else
             If FSO.FileExists(Server.MapPath(".")&"\"  & url & newFileName) Then
                 ' Nếu tệp tin tồn tại, thực hiện xóa
@@ -212,10 +281,16 @@
                                 <p class="header_title">Email:</p>
                                 <input type="text" class="header_2" id="email" name="email" value="<%=email%>">
                             </div>
+                            <%
+                                If (CInt(idUser) = CInt(Session("idUser"))) Then
+                            %>
                             <div class="header_1">
                                 <p class="header_title">Password:</p>
-                                <input type="text" class="header_2" id="password" name="password" value="<%=password%>">
+                                <input type="password" class="header_2" id="password" name="password" value="<%=password%>">
                             </div>
+                            <%    
+                                End if
+                            %>
                         </div>
                         <%
                             If (NOT isnull(Session("ErrorTitle"))) AND (TRIM(Session("ErrorTitle"))<>"") Then

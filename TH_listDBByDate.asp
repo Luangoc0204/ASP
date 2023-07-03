@@ -171,13 +171,14 @@
                                     cmdPrep.ActiveConnection = connDB
                                     cmdPrep.CommandType = 1
                                     cmdPrep.Prepared = True
-                                    cmdPrep.CommandText = "SELECT [Table].*, [User].*, idBookingTable, amountBT, dateBT, timeBT, noteBT, isCheckin FROM [BookingTable] INNER JOIN [User] ON [BookingTable].idUser =  [User].idUser inner join [Table] on [Table].idTable = BookingTable.idTable"&_
-                                    " where dateBT = CONVERT(date, ?, 103)"&_
-                                    " ORDER BY timeBT asc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
-                                    
                                     if (isnull(dateSearch) OR trim(dateSearch) = "") then
-                                        cmdPrep.parameters.Append cmdPrep.createParameter("dateBT",133,1, ,dateToday) 
+                                        cmdPrep.CommandText = "SELECT [Table].*, [User].*, idBookingTable, amountBT, dateBT, timeBT, noteBT, isCheckin FROM [BookingTable] INNER JOIN [User] ON [BookingTable].idUser =  [User].idUser inner join [Table] on [Table].idTable = BookingTable.idTable"&_
+                                        " where dateBT = CONVERT(date, '"&dateToday&"', 103)"&_
+                                        " ORDER BY timeBT desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
                                     else 
+                                        cmdPrep.CommandText = "SELECT [Table].*, [User].*, idBookingTable, amountBT, dateBT, timeBT, noteBT, isCheckin FROM [BookingTable] INNER JOIN [User] ON [BookingTable].idUser =  [User].idUser inner join [Table] on [Table].idTable = BookingTable.idTable"&_
+                                        " where dateBT = CONVERT(date, ?, 103)"&_
+                                        " ORDER BY timeBT desc OFFSET ? ROWS FETCH NEXT ? ROWS ONLY"
                                         cmdPrep.parameters.Append cmdPrep.createParameter("dateBT",133,1, ,dateSearch)    
                                     end if      
 

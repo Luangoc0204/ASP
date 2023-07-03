@@ -49,7 +49,7 @@ function checkTime() {
         title_error.innerHTML =
             'The time you entered is not within business hours!';
         btn_submit.disabled = true;
-    } else {
+    } else if (inputDateTime < currentTime) {
         title_error.innerHTML = 'You cannot enter elapsed time!';
         btn_submit.disabled = true;
     }

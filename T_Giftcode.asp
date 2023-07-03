@@ -121,14 +121,17 @@
                                 %>
                                 <tr>
                                     
-                                    <td style="min-width: 50px; height: 60px; padding-top: 15px; text-align: center;">
+                                    <td style="min-width: 50px;  padding-top: 15px; text-align: center;">
                                     <span><%=(i+1)%></span>
                                     
                                     <p style="display:none" class="idGiftCode"><%=result("idGiftCode")%></p>
                                     </td>
-                                    <td style="min-width: 60px; width: 100%;  height: 61.7px; display: flex; align-items: center;"><%=result("nameGiftCode")%></td>
-                                    <td style="min-width: 80px; height: 60px; padding-top: 15px; "><%=result("discountGiftCode")%>%</td>
-                                    <td style="min-width: 60px; width: 100%; height: 61.7px; padding-top: 1px; display: flex; justify-content: center; align-items: center;">
+                                    <td style="min-width: 60px; padding-top: 15px;">
+                                        <span>
+                                            <%=result("nameGiftCode")%></td>
+                                        </span>
+                                    <td style="min-width: 80px;  padding-top: 15px; padding-left:15px"><%=result("discountGiftCode")%>%</td>
+                                    <td style="min-width: 60px;   padding-top: 15px; text-align:center">
                                         <p style="display:none" class="isActive"><%=result("isActive")%></p>
                                         <%
                                             if (result("isActive") = true) then
@@ -144,7 +147,7 @@
                                             end if
                                         %>
                                     </td>
-                                    <td style="min-width: 60px; width: 10%; text-align: center; height: 60px;" class="group-edit-delete">
+                                    <td style="min-width: 60px; width: 10%; text-align: center; " class="group-edit-delete">
                                         
                                         <button type="button" class="btn btn-success edit-button" style="width: 85px;"><i class="fa-solid fa-pen" style="font-size: 15px;"></i> Edit</button>
                                         <button data-href="L_deleteGiftCode.asp?idGiftCode=<%=result("idGiftCode")%>" data-bs-toggle="modal" data-bs-target="#confirm-delete" type="button" class="btn btn-danger" style="padding: 7.5px 5px;  margin-left: 50px;"><i class="fa-solid fa-trash"></i> Delete</button>
@@ -158,11 +161,11 @@
                             </tbody>
                             <tbody>
                                 <tr>
-                                    <td style="min-width: 50px;width: 4.5%; text-align: center;"><%=i+1%></td>
-                                    <td style="min-width: 70px;width: 6.5%;"></td>
-                                    <td style="min-width: 80px; width: 5%;"></td>
-                                    <td style="min-width: 60px; width: 5%; text-align: center;"></td>
-                                    <td style="min-width: 60px; width: 10%; text-align: center;">
+                                    <td style="min-width: 50px; text-align: center;"><%=i+1%></td>
+                                    <td style="min-width: 70px;"></td>
+                                    <td style="min-width: 80px; "></td>
+                                    <td style="min-width: 60px; text-align: center;"></td>
+                                    <td style="min-width: 60px;  text-align: center;">
                                         <button type="button" class="btn btn-success add-button" style="width: 85px;"><i class="fa-solid fa-plus" style="font-size: 15px;"></i> Add</button>
                                         <button type="submit" class="btn btn-success save-button" style="width: 85px; display: none;"><i class="fa-solid fa-check" style="font-size: 15px;"></i> Save</button>
                                     </td>
@@ -179,7 +182,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">Purchase Confirmation</h5>
+                            <h5 class="modal-title">Delete Confirmation</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">

@@ -108,8 +108,17 @@
                                     <li class="filter" data-filter=".all">
                                         <img style="width: 60px; height: 40px;" src="assets/images/listBooking.png"
                                             alt="">
+                                        <%
+                                            if (Session("role") = "CUSTOMER") then
+                                        %>
+                                        <a href="./TH_listCartBill.asp" style="text-decoration: none; color: #fff">List Cart Bill</a>
+                                        <%
+                                            else
+                                        %>
                                         <a href="./TH_listCartBill.asp" style="text-decoration: none; color: #fff">List Bill</a>
-
+                                        <%
+                                            end if
+                                        %>
                                     </li>
                                 </ul>
                                 <!-- Search Date -->
@@ -161,15 +170,20 @@
                                     cmdPrep.CommandType = 1
                                     cmdPrep.Prepared = True  
                                     if (Session("role") = "CUSTOMER") then
-                                        cmdPrep.CommandText = "SELECT * FROM [Bill] where dateBill = CONVERT(date, ?, 103) and idCart = (select idCart from Cart where idUser = "&Session("idUser")&")"  
+                                        if (isnull(dateSearch) OR trim(dateSearch) = "") then
+                                            cmdPrep.CommandText = "SELECT * FROM [Bill] where dateBill = CONVERT(date, '"&dateToday&"', 103) and idCart = (select idCart from Cart where idUser = "&Session("idUser")&") order by dateBill desc, timeBill DESC"  
+                                        else 
+                                            cmdPrep.CommandText = "SELECT * FROM [Bill] where dateBill = CONVERT(date, ?, 103) and idCart = (select idCart from Cart where idUser = "&Session("idUser")&") order by dateBill desc, timeBill DESC"  
+                                            cmdPrep.parameters.Append cmdPrep.createParameter("dateBill",133,1, ,dateSearch)    
+                                        end if  
                                     else
-                                        cmdPrep.CommandText = "SELECT * FROM [Bill] where dateBill = CONVERT(date, ?, 103)"  
+                                        if (isnull(dateSearch) OR trim(dateSearch) = "") then
+                                            cmdPrep.CommandText = "SELECT * FROM [Bill] where dateBill = CONVERT(date, '"&dateToday&"', 103)"  
+                                        else 
+                                            cmdPrep.CommandText = "SELECT * FROM [Bill] where dateBill = CONVERT(date, ?, 103)"  
+                                            cmdPrep.parameters.Append cmdPrep.createParameter("dateBill",133,1, ,dateSearch)    
+                                        end if 
                                     end if                
-                                    if (isnull(dateSearch) OR trim(dateSearch) = "") then
-                                        cmdPrep.parameters.Append cmdPrep.createParameter("dateBill",133,1, ,dateToday) 
-                                    else 
-                                        cmdPrep.parameters.Append cmdPrep.createParameter("dateBill",133,1, ,dateSearch)    
-                                    end if  
                                     set result = cmdPrep.execute
                                     Dim i
                                     i = 1

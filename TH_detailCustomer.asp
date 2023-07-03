@@ -185,21 +185,17 @@
                             </div>
                             <div class="dist-bottom-row" style="margin-top: 40px;">
                                 <ul>
+                                    <%
+                                        if (trim(idCustomer) <> "" and Session("role") = "EMPLOYEE") then
+
+                                        else
+                                    %>
                                     <li >
                                         <button class="dish-add-btn btn-buy-now">
                                             <a href="T_EditUser.asp?idUser=<%=userTemp.idUser%>" style="text-decoration: none;color: white;">
                                                 <i class="fa-regular fa-pen-to-square fa-lg" style="color: #fff;"></i>
                                                 <span>Edit</span>
                                             </a>
-                                        </button>
-                                    </li>
-                                    <%
-                                        if (not isnull(idCustomer) and trim(idCustomer) <>"" and  not isnull(Session("role")) AND TRIM(Session("role")) <>"" AND Session("role") = "ADMIN") then
-                                    %>
-                                    <li>
-                                        <button class="dish-add-btn btn-add-to-cart">
-                                            <i class="fa-solid fa-user-minus fa-lg" style="color: #fff;"></i>
-                                            <span style="padding-left: 5px;">Delete</span>
                                         </button>
                                     </li>
                                     <%
@@ -236,10 +232,10 @@
                                         cmdPrep.CommandType = 1
                                         cmdPrep.Prepared = True
                                         if (not isnull(idCustomer) and trim(idCustomer) <> "") then
-                                            cmdPrep.CommandText = "SELECT BookingTable.*,  typeTable FROM [BookingTable] inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [BookingTable].idUser = (SELECT idUser FROM Customer WHERE idCustomer = ?) order by dateBT desc"
+                                            cmdPrep.CommandText = "SELECT BookingTable.*,  typeTable FROM [BookingTable] inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [BookingTable].idUser = (SELECT idUser FROM Customer WHERE idCustomer = ?) order by dateBT desc, timeBT DESC"
                                             cmdPrep.parameters.Append cmdPrep.createParameter("idCustomer",3,1, ,CInt(idCustomer))   
                                         elseif (not isnull(idUser) and trim(idUser) <> "") then
-                                            cmdPrep.CommandText = "SELECT BookingTable.*,  typeTable FROM [BookingTable] inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [BookingTable].idUser = ? order by dateBT desc"
+                                            cmdPrep.CommandText = "SELECT BookingTable.*,  typeTable FROM [BookingTable] inner join [Table] on [Table].idTable = BookingTable.idTable WHERE [BookingTable].idUser = ? order by dateBT desc, timeBT DESC"
                                             cmdPrep.parameters.Append cmdPrep.createParameter("idUser",3,1, ,CInt(idUser))   
                                         end if         
                                         set result = cmdPrep.execute

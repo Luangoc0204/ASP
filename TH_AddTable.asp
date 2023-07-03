@@ -160,7 +160,7 @@
                         ' false
                         Else
                     %>
-                        <h1 class="header_0"> Add Table</h1> 
+                        <h1 class="header_0"> Edit Table</h1> 
                     <%
                         End if
                     %>

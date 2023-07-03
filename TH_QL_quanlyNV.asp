@@ -131,7 +131,17 @@
                         <div class="col-lg-4 col-sm-6 dish-box-wp <%=Replace(listEmployee(i).position, " ", "")%>" data-cat="<%=Replace(listEmployee(i).position, " ", "")%>">
                             <div class="dish-box text-center">
                                 <div class="dist-img">
+                                <%
+                                    if (isnull(listUser(i).avatar) or trim(listUser(i).avatar)="") then
+                                %>
+                                    <img src="upload\user\user.png" alt="">
+                                <%
+                                    else
+                                %>    
                                     <img src="upload\user\<%=listUser(i).avatar%>" alt="">
+                                <%
+                                    end if
+                                %>    
                                 </div>
                                 <div class="human-title">
                                     <h3 class="h3-title"><%=listUser(i).nameUser%></h3>
